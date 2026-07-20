@@ -1,0 +1,34 @@
+{
+    "name": "@fixit360/sdk",
+    "version": "1.0.0",
+    "description": "Official JavaScript SDK for the FixIt360 Backend API.",
+    "author": "FixIt360",
+    "license": "MIT",
+    "type": "module",
+    "main": "./src/index.js",
+    "exports": {
+        ".": "./src/index.js"
+    },
+    "keywords": [
+        "fixit360",
+        "sdk",
+        "api",
+        "axios",
+        "javascript",
+        "frontend"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mbilalkhan704/FixIt360-SDK.git"
+    },
+    "bugs": {
+        "url": "https://github.com/mbilalkhan704/FixIt360-SDK/issues"
+    },
+    "homepage": "https://github.com/mbilalkhan704/FixIt360-SDK#readme",
+    "dependencies": {
+        "axios": "^1.11.0"
+    },
+    "engines": {
+        "node": ">=18"
+    }
+}
