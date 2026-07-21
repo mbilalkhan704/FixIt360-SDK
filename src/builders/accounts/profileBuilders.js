@@ -20,24 +20,12 @@ import {
 import {
     toRequestDate,
 } from "../../utils/dateUtils.js";
+import { IncompleteRequestDataError } from "../../errors/RequestErrors.js";
 
 
 function buildUpdateProfile(data) {
 
-    validateRequiredFields(data, [
-
-        "first_name",
-
-        "last_name",
-
-        "gender",
-
-        "date_of_birth",
-
-    ]);
-
-    return removeUndefinedFields({
-
+    const payload = removeUndefinedFields({
         first_name: data.first_name,
 
         last_name: data.last_name,
@@ -45,16 +33,24 @@ function buildUpdateProfile(data) {
         gender: data.gender,
 
         date_of_birth:
-            toRequestDate(data.date_of_birth),
+            data.date_of_birth !== undefined
+                ? toRequestDate(data.date_of_birth)
+                : undefined,
 
         phone_number:
             data.phone_number,
 
         profile_picture_key:
             data.profile_picture_key,
-
     });
 
+    if (Object.keys(payload).length === 0) {
+        throw new IncompleteRequestDataError(
+            "At least one profile field is required"
+        );
+    }
+
+    return payload;
 }
 
 

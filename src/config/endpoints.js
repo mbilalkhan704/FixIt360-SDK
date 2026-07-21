@@ -19,7 +19,7 @@ const ENDPOINTS = {
     ACCOUNTS: {
         REGISTER: `${ROUTES.ACCOUNTS}/register/`,
         LOGIN: `${ROUTES.ACCOUNTS}/login/`,
-        GOOGLE_LOGIN: `${ROUTES.ACCOUNTS}/google-login/`,
+        GOOGLE_LOGIN: `${ROUTES.ACCOUNTS}/google/`,
         REFRESH_TOKEN: `${ROUTES.ACCOUNTS}/token/refresh/`,
         LOGOUT: `${ROUTES.ACCOUNTS}/logout/`,
 
@@ -35,7 +35,7 @@ const ENDPOINTS = {
 
         PROFILE: `${ROUTES.ACCOUNTS}/profile/`,
 
-        DELETE_ACCOUNT: `${ROUTES.ACCOUNTS}/delete-account/`,
+        DELETE_ACCOUNT: `${ROUTES.ACCOUNTS}/delete/user/me/`,
         REACTIVATE_ACCOUNT: `${ROUTES.ACCOUNTS}/reactivate-account/`,
     },
 
@@ -86,10 +86,10 @@ const ENDPOINTS = {
 
     STORAGE: {
         PROFILE_PICTURE_SIGNATURE:
-            `${ROUTES.STORAGE}/profile-picture/signature/`,
+            `${ROUTES.STORAGE}/upload-signature/profile-picture/`,
 
         COMPLAINT_IMAGES_SIGNATURE:
-            `${ROUTES.STORAGE}/complaint-images/signature/`,
+            `${ROUTES.STORAGE}/upload-signature/complaint-images/`,
     },
 
 

@@ -59,10 +59,12 @@ export default function buildFormData(data) {
         data.folder,
     );
 
-    formData.append(
-        "context",
-        data.context,
-    );
+    if (data.context !== undefined && data.context !== null) {
+        formData.append(
+            "context",
+            data.context,
+        );
+    }
 
     return formData;
 

@@ -188,7 +188,7 @@ export function patch(options) {
 /**
  * Executes a DELETE request.
  */
-export function deleteRequest(options) {
+export function del(options) {
 
     return executeRequest({
 

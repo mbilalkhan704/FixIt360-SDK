@@ -169,14 +169,14 @@ function buildLogoutPayload(data) {
 
 export default {
 
-    register,
+    register: buildRegisterPayload,
 
-    login,
+    login: buildLoginPayload,
 
-    googleLogin,
+    googleLogin: buildGoogleLoginPayload,
 
-    refreshToken,
+    refreshToken: buildRefreshTokenPayload,
 
-    logout,
+    logout: buildLogoutPayload,
 
 };

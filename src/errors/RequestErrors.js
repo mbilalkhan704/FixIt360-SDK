@@ -171,10 +171,14 @@ export class ServerError extends ApiError {
 
     static CODE = "SERVER_ERROR";
 
-    static DEFAULT_MESSAGE =
-        "An internal server error occurred.";
+    static DEFAULT_MESSAGE = "Internal server error";
 
-    constructor() {
-        super(ServerError.DEFAULT_MESSAGE);
+    constructor(message = null, cause = null) {
+
+        super(
+            message ??
+            ServerError.DEFAULT_MESSAGE,
+            cause,
+        );
     }
 }

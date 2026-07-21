@@ -100,14 +100,14 @@ function buildChangePasswordPayload(data) {
 
 export default {
 
-    forgotPassword,
+    forgotPassword: buildForgotPasswordPayload,
 
-    verifyPasswordResetOTP,
+    verifyPasswordResetOTP: buildVerifyPasswordResetOTPPayload,
 
-    resetPassword,
+    resetPassword: buildResetPasswordPayload,
 
-    confirmPassword,
+    confirmPassword: buildConfirmPasswordPayload,
 
-    changePassword,
+    changePassword: buildChangePasswordPayload,
 
 };

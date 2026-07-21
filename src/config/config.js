@@ -62,7 +62,7 @@ export function initializeSDK(config = {}) {
  *
  * Internal SDK use only.
  */
-export function getcurrentConfig() {
+export function getCurrentConfig() {
     return currentConfig;
 }
 

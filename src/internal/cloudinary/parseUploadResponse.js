@@ -11,6 +11,9 @@
  */
 
 
+import { InvalidResponseError } from "../../errors/RequestErrors.js";
+
+
 /**
  * Parses a profile picture upload response.
  *
@@ -19,6 +22,12 @@
  * @returns {Object}
  */
 export function parseProfilePictureUploadResponse(response) {
+
+    if (!response || !response.public_id) {
+        throw new InvalidResponseError(
+            "Cloudinary response is missing public_id."
+        );
+    }
 
     return {
 
@@ -30,9 +39,6 @@ export function parseProfilePictureUploadResponse(response) {
 
             profile_picture_key:
                 response.public_id,
-
-            profile_picture_url:
-                response.secure_url,
 
         },
 
@@ -50,6 +56,24 @@ export function parseProfilePictureUploadResponse(response) {
  */
 export function parseComplaintImagesUploadResponse(responses) {
 
+    if (!Array.isArray(responses) || responses.length === 0) {
+        throw new InvalidResponseError(
+            "Cloudinary response array is missing or empty."
+        );
+    }
+
+    const complaint_image_keys = responses.map((response) => {
+
+        if (!response || !response.public_id) {
+            throw new InvalidResponseError(
+                "Cloudinary response is missing public_id."
+            );
+        }
+
+        return response.public_id;
+
+    });
+
     return {
 
         success: true,
@@ -57,19 +81,7 @@ export function parseComplaintImagesUploadResponse(responses) {
         message: "Complaint images uploaded successfully.",
 
         data: {
-
-            complaint_images:
-
-                responses.map((response) => ({
-
-                    complaint_image_key:
-                        response.public_id,
-
-                    complaint_image_url:
-                        response.secure_url,
-
-                })),
-
+            complaint_image_keys,
         },
 
     };

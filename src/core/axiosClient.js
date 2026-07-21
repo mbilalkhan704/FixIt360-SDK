@@ -11,7 +11,7 @@
 import axios from "axios";
 
 import {
-    getSDKConfig,
+    getCurrentConfig,
     isInitialized,
 } from "../config/config.js";
 
@@ -41,9 +41,9 @@ export function getAxiosClient() {
         return instance;
     }
 
-    const config = getSDKConfig();
+    const config = getCurrentConfig();
 
-    let instance = axios.create({
+    instance = axios.create({
 
         baseURL: config.baseURL,
 
