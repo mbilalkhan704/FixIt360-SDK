@@ -62,14 +62,17 @@ const ENDPOINTS = {
 
     COMPLAINTS: {
         LIST: `${ROUTES.COMPLAINTS}/`,
-        CREATE: `${ROUTES.COMPLAINTS}/`,
+        CREATE: `${ROUTES.COMPLAINTS}/create/`,
+
+        MY_LIST: `${ROUTES.COMPLAINTS}/my/`,
+        USER_LIST: (userId) => `${ROUTES.COMPLAINTS}/user/${userId}/`,
 
         DETAIL: (complaintId) => `${ROUTES.COMPLAINTS}/${complaintId}/`,
-        UPDATE: (complaintId) => `${ROUTES.COMPLAINTS}/${complaintId}/`,
-        DELETE: (complaintId) => `${ROUTES.COMPLAINTS}/${complaintId}/`,
+        UPDATE: (complaintId) => `${ROUTES.COMPLAINTS}/${complaintId}/update/`,
+        DELETE: (complaintId) => `${ROUTES.COMPLAINTS}/${complaintId}/delete/`,
 
         ADD_IMAGES: (complaintId) =>
-            `${ROUTES.COMPLAINTS}/${complaintId}/images/`,
+            `${ROUTES.COMPLAINTS}/${complaintId}/images/add/`,
 
         DELETE_IMAGE: (complaintId, imageId) =>
             `${ROUTES.COMPLAINTS}/${complaintId}/images/${imageId}/`,
