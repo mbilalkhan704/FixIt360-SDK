@@ -8,6 +8,43 @@
  * ============================================================================
  */
 
+
+/**
+ * @import {ApiResponse} from "../../types/typedefs.js"
+ */
+
+/**
+ * @typedef {Object} GetProfileRequest
+ * @property {string} access_token
+ */
+
+/**
+ * @typedef {Object} UpdateProfileRequest
+ * @property {string} access_token
+ * @property {string} [first_name]
+ * @property {string} [last_name]
+ * @property {('male'|'female'|'other')} [gender]
+ * @property {string|Date} [date_of_birth]
+ * @property {string} [phone_number]
+ * @property {File|Blob} [file]
+ * @property {function(number): void} [onProgress]
+ */
+
+/**
+ * @typedef {Object} ProfileData
+ * @property {number} id
+ * @property {string} email
+ * @property {string} first_name
+ * @property {string} last_name
+ * @property {string} date_of_birth
+ * @property {('male'|'female'|'other')} gender
+ * @property {?string} phone_number
+ * @property {?string} profile_picture_url
+ * @property {string} role
+ * @property {boolean} email_verified
+ */
+
+
 import ENDPOINTS from "../../config/endpoints.js";
 
 import {
@@ -30,10 +67,9 @@ import ProfileBuilders from "../../builders/accounts/profileBuilders.js";
  * Authentication:
  *     Required
  *
- * @param {Object} data
- * @param {string} data.access_token
+ * @param {GetProfileRequest} data
  *
- * @returns {Promise<FixIt360Response>}
+ * @returns {Promise<ApiResponse & { data: ProfileData }>}
  *
  * @example
  * await api.accounts.profile.getProfile({
@@ -58,36 +94,37 @@ async function getProfileApi(data) {
 /**
  * Updates the authenticated user's profile.
  *
- * Authentication:
- *     Required
+ * If profile_picture is provided, the SDK uploads it to Cloudinary
+ * automatically and sends the resulting profile_picture_key to the backend.
  *
- * @param {Object} data
- * @param {string} data.access_token
- * @param {File|Blob} [data.profile_picture]
- * @param {Function} [data.onProgress]
+ * ...
  *
- * @returns {Promise<FixIt360Response>}
+ * @param {UpdateProfileRequest} data
+ *
+ * @returns {Promise<ApiResponse & { data: ProfileData }>}
  *
  * @example
+ * const file = fileInput.files[0];
+ *
  * await api.accounts.profile.updateProfile({
  *     access_token,
  *     first_name: "Muhammad",
  *     last_name: "Bilal",
- *     profile_picture: file,
+ *     file,
  * });
  */
 async function updateProfileApi(data) {
 
     let profile_picture_key;
 
-    if (data.profile_picture) {
+    if (data.file) {
 
         const uploadResponse =
             await StorageApi.uploadProfilePicture({
 
                 access_token: data.access_token,
 
-                file: data.profile_picture,
+                file: data.file,
 
                 onProgress: data.onProgress,
 

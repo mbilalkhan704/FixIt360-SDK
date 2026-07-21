@@ -29,6 +29,15 @@ export function toRequestDate(value) {
         throw new IncompleteRequestDataError("date");
     }
 
+    // Already a date-only string
+    if (typeof value === "string") {
+        const match = value.match(/^\d{4}-\d{2}-\d{2}$/);
+
+        if (match) {
+            return value;
+        }
+    }
+
     const date =
         value instanceof Date
             ? value
@@ -40,11 +49,12 @@ export function toRequestDate(value) {
         );
     }
 
-    return date
-        .toISOString()
-        .split("T")[0];
+    return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0"),
+    ].join("-");
 }
-
 
 /**
  * Converts any backend ISO date into a JavaScript Date.

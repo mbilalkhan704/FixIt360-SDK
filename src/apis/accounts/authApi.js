@@ -8,6 +8,57 @@
  * ============================================================================
  */
 
+
+/**
+ * @import {ApiResponse, AuthenticationData} from "../../types/typedefs.js"
+ */
+
+
+/**
+ * @typedef {Object} RegisterRequest
+ * @property {string} first_name
+ *     Required. User's first name. Maximum 50 characters.
+ * @property {string} last_name
+ *     Required. User's last name. Maximum 50 characters.
+ * @property {('male'|'female'|'other')} gender
+ *     Required.
+ * @property {string|Date} date_of_birth
+ *     Required. Accepts a Date object or a string in YYYY-MM-DD format.
+ * @property {string} email
+ *     Required. Email address used for authentication.
+ * @property {string} password
+ *     Required.
+ * @property {string} confirm_password
+ *     Required. Must match password.
+ * @property {string} [phone_number]
+ *     Optional.
+ */
+
+/**
+ * @typedef {Object} LoginRequest
+ * @property {string} email
+ * @property {string} password
+ */
+
+/**
+ * @typedef {Object} GoogleLoginRequest
+ * @property {string} id_token
+ *     Google Identity Services ID Token.
+ */
+
+/**
+ * @typedef {Object} RefreshTokenRequest
+ * @property {string} refresh
+ *     Refresh token previously issued by the SDK.
+ */
+
+/**
+ * @typedef {Object} LogoutRequest
+ * @property {string} access_token
+ * @property {string} refresh
+ */
+
+
 import ENDPOINTS from "../../config/endpoints.js";
 
 import {
@@ -27,29 +78,12 @@ import AuthBuilders from "../../builders/accounts/authBuilders.js";
  * Authentication:
  *     Not Required
  *
- * @param {Object} data
- * @param {string} data.first_name
- * @param {string} data.last_name
- * @param {string} data.gender
- * @param {Date|string} data.date_of_birth
- * @param {string} data.email
- * @param {string} data.password
- * @param {string} data.confirm_password
- * @param {string} [data.phone_number]
+ * @param {RegisterRequest} data
  *
- * @returns {Promise<FixIt360Response>}
+ * @returns {Promise<ApiResponse>}
  *
  * @example
- * await api.accounts.auth.register({
- *     first_name: "Muhammad",
- *     last_name: "Bilal",
- *     gender: "male",
- *     date_of_birth: "2004-07-16",
- *     email: "bilal@example.com",
- *     phone_number: "03001234567",
- *     password: "Password@123",
- *     confirm_password: "Password@123",
- * });
+ * await api.accounts.auth.register({...});
  */
 async function registerApi(data) {
 
@@ -65,22 +99,7 @@ async function registerApi(data) {
 
 
 /**
- * Authenticates a FixIt360 user.
- *
- * Authentication:
- *     Not Required
- *
- * @param {Object} data
- * @param {string} data.email
- * @param {string} data.password
- *
- * @returns {Promise<FixIt360Response>}
- *
- * @example
- * await api.accounts.auth.login({
- *     email: "bilal@example.com",
- *     password: "Password@123",
- * });
+ * @returns {Promise<ApiResponse & { data: AuthenticationData }>}
  */
 async function loginApi(data) {
 
@@ -96,20 +115,7 @@ async function loginApi(data) {
 
 
 /**
- * Authenticates a user using Google Sign-In.
- *
- * Authentication:
- *     Not Required
- *
- * @param {Object} data
- * @param {string} data.id_token
- *
- * @returns {Promise<FixIt360Response>}
- *
- * @example
- * await api.accounts.auth.googleLogin({
- *     id_token: googleCredential,
- * });
+ * @returns {Promise<ApiResponse & { data: AuthenticationData }>}
  */
 async function googleLoginApi(data) {
 
@@ -125,20 +131,7 @@ async function googleLoginApi(data) {
 
 
 /**
- * Generates a new access token using a refresh token.
- *
- * Authentication:
- *     Not Required
- *
- * @param {Object} data
- * @param {string} data.refresh
- *
- * @returns {Promise<FixIt360Response>}
- *
- * @example
- * await api.accounts.auth.refreshToken({
- *     refresh: refreshToken,
- * });
+ * @returns {Promise<ApiResponse & { data: AuthenticationData }>}
  */
 async function refreshTokenApi(data) {
 
@@ -154,22 +147,7 @@ async function refreshTokenApi(data) {
 
 
 /**
- * Logs the authenticated user out by blacklisting the refresh token.
- *
- * Authentication:
- *     Required
- *
- * @param {Object} data
- * @param {string} data.access_token
- * @param {string} data.refresh
- *
- * @returns {Promise<FixIt360Response>}
- *
- * @example
- * await api.accounts.auth.logout({
- *     access_token,
- *     refresh,
- * });
+ * @returns {Promise<ApiResponse>}
  */
 async function logoutApi(data) {
 

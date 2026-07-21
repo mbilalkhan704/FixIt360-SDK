@@ -6,6 +6,49 @@
  * ============================================================================
  */
 
+
+/**
+ * @import {ApiResponse} from "../../types/typedefs.js"
+ */
+
+/**
+ * @typedef {Object} ForgotPasswordRequest
+ * @property {string} email
+ */
+
+/**
+ * @typedef {Object} VerifyPasswordResetOTPRequest
+ * @property {string} email
+ * @property {string} otp
+ */
+
+/**
+ * @typedef {Object} PasswordResetTokenData
+ * @property {string} password_reset_token
+ */
+
+/**
+ * @typedef {Object} ResetPasswordRequest
+ * @property {string} password_reset_token
+ * @property {string} password
+ * @property {string} confirm_password
+ */
+
+/**
+ * @typedef {Object} ConfirmPasswordRequest
+ * @property {string} access_token
+ * @property {string} password
+ */
+
+/**
+ * @typedef {Object} ChangePasswordRequest
+ * @property {string} access_token
+ * @property {string} current_password
+ * @property {string} new_password
+ * @property {string} confirm_new_password
+ */
+
+
 import ENDPOINTS from "../../config/endpoints.js";
 
 import {
@@ -25,10 +68,9 @@ import PasswordBuilders from "../../builders/accounts/passwordBuilders.js";
  * Authentication:
  *     Not Required
  *
- * @param {Object} data
- * @param {string} data.email
+ * @param {ForgotPasswordRequest} data
  *
- * @returns {Promise<FixIt360Response>}
+ * @returns {Promise<ApiResponse>}
  *
  * @example
  * await api.accounts.password.forgotPassword({
@@ -54,11 +96,9 @@ async function forgotPasswordApi(data) {
  * Authentication:
  *     Not Required
  *
- * @param {Object} data
- * @param {string} data.email
- * @param {string} data.otp
+ * @param {VerifyPasswordResetOTPRequest} data
  *
- * @returns {Promise<FixIt360Response>}
+ * @returns {Promise<ApiResponse & { data: PasswordResetTokenData }>}
  *
  * @example
  * await api.accounts.password.verifyPasswordResetOTP({
@@ -85,12 +125,9 @@ async function verifyPasswordResetOTPApi(data) {
  * Authentication:
  *     Not Required
  *
- * @param {Object} data
- * @param {string} data.password_reset_token
- * @param {string} data.password
- * @param {string} data.confirm_password
+ * @param {ResetPasswordRequest} data
  *
- * @returns {Promise<FixIt360Response>}
+ * @returns {Promise<ApiResponse>}
  *
  * @example
  * await api.accounts.password.resetPassword({
@@ -119,11 +156,9 @@ async function resetPasswordApi(data) {
  * Authentication:
  *     Required
  *
- * @param {Object} data
- * @param {string} data.access_token
- * @param {string} data.password
+ * @param {ConfirmPasswordRequest} data
  *
- * @returns {Promise<FixIt360Response>}
+ * @returns {Promise<ApiResponse>}
  *
  * @example
  * await api.accounts.password.confirmPassword({
@@ -154,13 +189,9 @@ async function confirmPasswordApi(data) {
  * Authentication:
  *     Required
  *
- * @param {Object} data
- * @param {string} data.access_token
- * @param {string} data.current_password
- * @param {string} data.new_password
- * @param {string} data.confirm_new_password
+ * @param {ChangePasswordRequest} data
  *
- * @returns {Promise<FixIt360Response>}
+ * @returns {Promise<ApiResponse>}
  *
  * @example
  * await api.accounts.password.changePassword({
