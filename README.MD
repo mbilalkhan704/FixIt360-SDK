@@ -16,7 +16,7 @@ Admins can review volunteer applications, manage active volunteers, and handle r
 
 Storage uploads are handled automatically. Profile pictures and complaint images go to Cloudinary behind the scenes, with progress callbacks if you need them.
 
-Errors follow a consistent typed hierarchy (`NetworkError`, `ServerError`, `IncompleteRequestDataError`, and so on) so you can handle failures predictably instead of guessing at error shapes.
+Errors follow a consistent typed hierarchy (`NetworkError`, `ServerError`, `InvalidRequestDataError`, and so on) so you can handle failures predictably instead of guessing at error shapes.
 
 Every response, success or business-logic failure, resolves to the same `{ success, message, data }` shape.
 
