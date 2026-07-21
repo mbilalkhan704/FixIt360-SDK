@@ -14,7 +14,6 @@
  */
 /**
  * @typedef {Object} ListComplaintsRequest
- * @property {string} access_token
  */
 
 /**
@@ -31,7 +30,9 @@
  * @property {number} latitude
  * @property {number} longitude
  * @property {string} category
- * @property {Array<File|Blob>} [files]
+ * @property {string} address
+ * @property {Array<File|Blob>} files
+ * @property {number} [primaryFileIndex] - index into files marking the primary photo; defaults to first if omitted
  * @property {function(number): void} [onProgress]
  */
 
@@ -43,7 +44,13 @@
  * @property {string} [description]
  * @property {number} [latitude]
  * @property {number} [longitude]
- * @property {string} [category]
+ * @property {string} [address]
+ * @property {Array<number|string>} [keepPhotoIds] - existing photo IDs to keep unchanged; any existing photo omitted here (and not in replacements) is deleted
+ * @property {Array<File|Blob>} [newFiles] - new photos to add
+ * @property {Array<{photo_id: number|string, file: File|Blob}>} [replacements] - existing photos to replace with a new file
+ * @property {number|string} [primaryPhotoId] - marks an existing kept or replaced photo as primary
+ * @property {number} [primaryNewFileIndex] - marks a photo from newFiles (by index) as primary
+ * @property {function(number): void} [onProgress]
  */
 
 /**
@@ -65,21 +72,12 @@
 
 
 import ENDPOINTS from "../../config/endpoints.js";
-
-import {
-    get,
-    post,
-    patch,
-    del,
-} from "../../core/request.js";
-
-import {
-    buildAuthorizationHeaders,
-} from "../../core/headers.js";
-
+import { get, post, patch, del } from "../../core/request.js";
+import { buildAuthorizationHeaders } from "../../core/headers.js";
 import ComplaintBuilders from "../../builders/complaints/complaintBuilders.js";
-
-import ComplaintImagesApi from "./complaintImagesApi.js";
+import { validateFiles } from "../../utils/validators.js";
+import StorageApi from "../storage/storageApi.js";
+import { MIN_COMPLAINT_PHOTOS, MAX_COMPLAINT_PHOTOS } from "../../config/constants.js";
 
 
 /**
@@ -97,10 +95,6 @@ async function listComplaintsApi(data) {
     return get({
 
         endpoint: ENDPOINTS.COMPLAINTS.LIST,
-
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
 
     });
 
@@ -135,85 +129,89 @@ async function getComplaintApi(data) {
 
 
 /**
- * Creates a complaint.
- *
- * If files are provided, they are automatically uploaded
- * and attached to the newly created complaint.
- *
- * Authentication:
- *     Required
+ * Creates a complaint. Photos are uploaded and included atomically
+ * in the same create request (backend requires >=1 photo at creation).
  *
  * @param {CreateComplaintRequest} data
- *
  * @returns {Promise<ApiResponse & { data: ComplaintData }>}
  */
 async function createComplaintApi(data) {
 
-    const response = await post({
+    validateFiles(data.files, {
+        min: MIN_COMPLAINT_PHOTOS,
+        max: MAX_COMPLAINT_PHOTOS,
+    });
+
+    const uploadResponse = await StorageApi.uploadComplaintImages({
+        access_token: data.access_token,
+        files: data.files,
+        onProgress: data.onProgress,
+    });
+
+    return post({
 
         endpoint: ENDPOINTS.COMPLAINTS.CREATE,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
+        headers: buildAuthorizationHeaders(data.access_token),
+
+        payload: ComplaintBuilders.buildCreateComplaint(
+            data,
+            uploadResponse.data.complaint_image_keys,
         ),
 
-        payload:
-            ComplaintBuilders.buildCreateComplaint(
-                data,
-            ),
-
     });
-
-    if (
-        Array.isArray(data.files) &&
-        data.files.length > 0
-    ) {
-
-        await ComplaintImagesApi.add({
-
-            access_token: data.access_token,
-
-            complaint_id: response.data.id,
-
-            files: data.files,
-
-            onProgress: data.onProgress,
-
-        });
-
-    }
-
-    return response;
 
 }
 
 
 /**
- * Updates a complaint.
- *
- * Authentication:
- *     Required
+ * Updates a complaint. Supports keeping, adding, replacing, and
+ * (implicitly, via omission) deleting photos in one atomic request.
  *
  * @param {UpdateComplaintRequest} data
- *
  * @returns {Promise<ApiResponse & { data: ComplaintData }>}
  */
 async function updateComplaintApi(data) {
 
+    const hasNew = Array.isArray(data.newFiles) && data.newFiles.length > 0;
+    const hasReplacements = Array.isArray(data.replacements) && data.replacements.length > 0;
+
+    let newImageKeys = [];
+    let replacementImageKeys = [];
+
+    if (hasNew || hasReplacements) {
+
+        const filesToUpload = [
+            ...(hasNew ? data.newFiles : []),
+            ...(hasReplacements ? data.replacements.map((r) => r.file) : []),
+        ];
+
+        validateFiles(filesToUpload, { min: 1, max: MAX_COMPLAINT_PHOTOS });
+
+        const uploadResponse = await StorageApi.uploadComplaintImages({
+            access_token: data.access_token,
+            files: filesToUpload,
+            onProgress: data.onProgress,
+        });
+
+        const uploadedKeys = uploadResponse.data.complaint_image_keys;
+        const newCount = hasNew ? data.newFiles.length : 0;
+
+        newImageKeys = uploadedKeys.slice(0, newCount);
+        replacementImageKeys = uploadedKeys.slice(newCount);
+
+    }
+
     return patch({
 
-        endpoint: ENDPOINTS.COMPLAINTS.UPDATE(
-            data.complaint_id,
-        ),
+        endpoint: ENDPOINTS.COMPLAINTS.UPDATE(data.complaint_id),
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders(data.access_token),
 
-        payload:
-            ComplaintBuilders.buildUpdateComplaint(
-                data,
-            ),
+        payload: ComplaintBuilders.buildUpdateComplaint(
+            data,
+            { newImageKeys, replacementImageKeys },
+        ),
 
     });
 

@@ -18,7 +18,6 @@
 
 /**
  * @typedef {Object} VerifyPasswordResetOTPRequest
- * @property {string} email
  * @property {string} otp
  */
 

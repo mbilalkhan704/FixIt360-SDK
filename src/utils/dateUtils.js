@@ -9,7 +9,7 @@
  */
 
 import {
-    IncompleteRequestDataError,
+    InvalidRequestDataError,
 } from "../errors/RequestErrors.js";
 
 
@@ -26,7 +26,7 @@ import {
 export function toRequestDate(value) {
 
     if (!value) {
-        throw new IncompleteRequestDataError("date");
+        throw InvalidRequestDataError.missingFields("date");
     }
 
     // Already a date-only string

@@ -53,7 +53,8 @@ import {
 import StorageApi from "../storage/storageApi.js";
 
 import ComplaintBuilders from "../../builders/complaints/complaintBuilders.js";
-
+import { validateFile, validateFiles } from "../../utils/validators.js";
+import { MIN_COMPLAINT_PHOTOS, MAX_COMPLAINT_PHOTOS } from "../../config/constants.js";
 
 /**
  * Adds images to a complaint.
@@ -67,36 +68,26 @@ import ComplaintBuilders from "../../builders/complaints/complaintBuilders.js";
  */
 async function addImagesApi(data) {
 
-    const uploadResponse =
-        await StorageApi.uploadComplaintImages({
+    validateFiles(data.files, {
+        min: MIN_COMPLAINT_PHOTOS,
+        max: MAX_COMPLAINT_PHOTOS,
+    });
 
-            access_token: data.access_token,
-
-            files: data.files,
-
-            onProgress: data.onProgress,
-
-        });
+    const uploadResponse = await StorageApi.uploadComplaintImages({
+        access_token: data.access_token,
+        files: data.files,
+        onProgress: data.onProgress,
+    });
 
     return post({
 
-        endpoint:
-            ENDPOINTS.COMPLAINTS.ADD_IMAGES(
-                data.complaint_id,
-            ),
+        endpoint: ENDPOINTS.COMPLAINTS.ADD_IMAGES(data.complaint_id),
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders(data.access_token),
 
-        payload:
-            ComplaintBuilders.buildAddImages({
-
-                complaint_image_keys:
-                    uploadResponse.data
-                        .complaint_image_keys,
-
-            }),
+        payload: ComplaintBuilders.buildAddImages({
+            complaint_image_keys: uploadResponse.data.complaint_image_keys,
+        }),
 
     });
 
@@ -115,40 +106,23 @@ async function addImagesApi(data) {
  */
 async function replaceImageApi(data) {
 
-    const uploadResponse =
-        await StorageApi.uploadComplaintImages({
+    validateFile(data.file);
 
-            access_token: data.access_token,
-
-            files: [data.file],
-
-            onProgress: data.onProgress,
-
-        });
+    const uploadResponse = await StorageApi.uploadComplaintImages({
+        access_token: data.access_token,
+        files: [data.file],
+        onProgress: data.onProgress,
+    });
 
     return patch({
 
-        endpoint:
-            ENDPOINTS.COMPLAINTS.REPLACE_IMAGE(
+        endpoint: ENDPOINTS.COMPLAINTS.DELETE_OR_REPLACE_IMAGE(data.complaint_id, data.image_id),
 
-                data.complaint_id,
+        headers: buildAuthorizationHeaders(data.access_token),
 
-                data.image_id,
-
-            ),
-
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
-
-        payload:
-            ComplaintBuilders.buildReplaceImage({
-
-                complaint_image_key:
-                    uploadResponse.data
-                        .complaint_image_keys[0],
-
-            }),
+        payload: ComplaintBuilders.buildReplaceImage({
+            new_image_key: uploadResponse.data.complaint_image_keys[0],
+        }),
 
     });
 
@@ -170,7 +144,7 @@ async function deleteImageApi(data) {
     return del({
 
         endpoint:
-            ENDPOINTS.COMPLAINTS.DELETE_IMAGE(
+            ENDPOINTS.COMPLAINTS.DELETE_OR_REPLACE_IMAGE(
 
                 data.complaint_id,
 

@@ -11,6 +11,7 @@
 
 import {
     validateRequiredFields,
+    validateAvailabilitySlots,
 } from "../../utils/validators.js";
 
 import {
@@ -28,14 +29,29 @@ import {
 function buildVolunteerApplication(data) {
 
     validateRequiredFields(data, [
-        "availability",
+        "motivation",
+        "occupation",
+        "emergency_contact",
+        "availabilities",
     ]);
 
-    return {
+    validateAvailabilitySlots(data.availabilities);
 
-        availability: data.availability,
+    return removeUndefinedFields({
 
-    };
+        motivation: data.motivation,
+
+        occupation: data.occupation,
+
+        emergency_contact: data.emergency_contact,
+
+        experience: data.experience,
+
+        skills: data.skills,
+
+        availabilities: data.availabilities,
+
+    });
 
 }
 
@@ -50,12 +66,14 @@ function buildVolunteerApplication(data) {
 function buildAvailabilityUpdate(data) {
 
     validateRequiredFields(data, [
-        "availability",
+        "availabilities",
     ]);
+
+    validateAvailabilitySlots(data.availabilities);
 
     return {
 
-        availability: data.availability,
+        availabilities: data.availabilities,
 
     };
 

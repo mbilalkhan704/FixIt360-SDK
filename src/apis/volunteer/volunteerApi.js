@@ -35,7 +35,12 @@
 /**
  * @typedef {Object} ApplyVolunteerRequest
  * @property {string} access_token
- * @property {AvailabilitySlot[]} availability
+ * @property {string} motivation
+ * @property {string} occupation
+ * @property {string} emergency_contact
+ * @property {string} [experience]
+ * @property {string} [skills]
+ * @property {AvailabilitySlot[]} availabilities
  */
 
 /**
@@ -46,7 +51,7 @@
 /**
  * @typedef {Object} UpdateAvailabilityRequest
  * @property {string} access_token
- * @property {AvailabilitySlot[]} availability
+ * @property {AvailabilitySlot[]} availabilities
  */
 
 /**
@@ -64,6 +69,7 @@ import ENDPOINTS from "../../config/endpoints.js";
 
 import {
     get,
+    put,
     post,
     patch,
 } from "../../core/request.js";
@@ -165,9 +171,9 @@ async function getProfileApi(data) {
  *
  * @returns {Promise<ApiResponse>}
  */
-async function updateAvailabilityApi(data) {
+async function updateAvailabilitiesApi(data) {
 
-    return patch({
+    return put({
 
         endpoint:
             ENDPOINTS.VOLUNTEER.UPDATE_AVAILABILITY,
@@ -257,7 +263,7 @@ export default {
 
     getProfile: getProfileApi,
 
-    updateAvailability: updateAvailabilityApi,
+    updateAvailabilities: updateAvailabilitiesApi,
 
     resign: resignApi,
 

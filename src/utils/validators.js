@@ -9,7 +9,7 @@
  */
 
 import {
-    IncompleteRequestDataError,
+    InvalidRequestDataError,
 } from "../errors/RequestErrors.js";
 
 
@@ -40,7 +40,7 @@ export function validateRequiredFields(
     }
 
     if (missingFields.length > 0) {
-        throw new IncompleteRequestDataError(
+        throw InvalidRequestDataError.missingFields(
             missingFields,
         );
     }
@@ -149,23 +149,33 @@ export function validateFile(file) {
  *
  * @throws {TypeError}
  */
-export function validateFiles(files) {
+export function validateFiles(files, { min = 1, max = Infinity } = {}) {
 
     if (!Array.isArray(files)) {
-        throw new TypeError(
+        throw new InvalidRequestDataError(
             "Expected an array of files.",
+            "files",
         );
     }
 
-    if (files.length === 0) {
-        throw new TypeError(
-            "Expected at least one file.",
+    if (files.length < min) {
+        throw new InvalidRequestDataError(
+            `Expected at least ${min} file${min === 1 ? "" : "s"}.`,
+            "files",
+        );
+    }
+
+    if (files.length > max) {
+        throw new InvalidRequestDataError(
+            `Expected at most ${max} files.`,
+            "files",
         );
     }
 
     for (const file of files) {
         validateFile(file);
     }
+
 }
 
 
@@ -189,4 +199,49 @@ export function validateCallback(callback) {
             "Expected callback to be a function.",
         );
     }
+}
+
+
+/**
+ * Ensures each availability slot has start_time strictly
+ * before end_time.
+ *
+ * Mirrors the backend's per-slot time-order check so callers
+ * get fast, clear feedback before hitting the network. Does
+ * not duplicate the backend's max-duration rule, since that
+ * limit lives only on the backend and could drift out of sync
+ * if hardcoded here.
+ *
+ * @param {Array<{day: string, start_time: string, end_time: string}>} slots
+ *
+ * @throws {TypeError}
+ */
+export function validateAvailabilitySlots(slots) {
+
+    if (!Array.isArray(slots) || slots.length === 0) {
+        throw new TypeError(
+            "Expected at least one availability slot.",
+        );
+    }
+
+    for (const slot of slots) {
+
+        if (
+            !slot ||
+            typeof slot.start_time !== "string" ||
+            typeof slot.end_time !== "string"
+        ) {
+            throw new TypeError(
+                "Each availability slot requires start_time and end_time.",
+            );
+        }
+
+        if (slot.start_time >= slot.end_time) {
+            throw new TypeError(
+                `start_time (${slot.start_time}) must be before end_time (${slot.end_time}).`,
+            );
+        }
+
+    }
+
 }

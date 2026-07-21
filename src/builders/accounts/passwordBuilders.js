@@ -52,15 +52,15 @@ function buildVerifyPasswordResetOTPPayload(data) {
 function buildResetPasswordPayload(data) {
 
     validateRequiredFields(data, [
-        "password_reset_token",
-        "password",
-        "confirm_password",
+        "verification_token",
+        "new_password",
+        "confirm_new_password",
     ]);
 
     return {
-        password_reset_token: data.password_reset_token,
-        password: data.password,
-        confirm_password: data.confirm_password,
+        verification_token: data.verification_token,
+        new_password: data.new_password,
+        confirm_new_password: data.confirm_new_password,
     };
 }
 
@@ -86,13 +86,13 @@ function buildConfirmPasswordPayload(data) {
 function buildChangePasswordPayload(data) {
 
     validateRequiredFields(data, [
-        "current_password",
+        "verification_token",
         "new_password",
         "confirm_new_password",
     ]);
 
     return {
-        current_password: data.current_password,
+        verification_token: data.verification_token,
         new_password: data.new_password,
         confirm_new_password: data.confirm_new_password,
     };

@@ -74,11 +74,10 @@ const ENDPOINTS = {
         ADD_IMAGES: (complaintId) =>
             `${ROUTES.COMPLAINTS}/${complaintId}/images/add/`,
 
-        DELETE_IMAGE: (complaintId, imageId) =>
-            `${ROUTES.COMPLAINTS}/${complaintId}/images/${imageId}/`,
-
         REPLACE_IMAGE: (complaintId, imageId) =>
-            `${ROUTES.COMPLAINTS}/${complaintId}/images/${imageId}/`,
+            `${ROUTES.COMPLAINTS}/${complaintId}/images/${imageId}/replace/`,
+        DELETE_IMAGE: (complaintId, imageId) =>
+            `${ROUTES.COMPLAINTS}/${complaintId}/images/${imageId}/delete/`,
     },
 
     /**

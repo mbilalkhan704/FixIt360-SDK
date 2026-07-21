@@ -33,6 +33,7 @@ async function run() {
             longitude: 67.0011,
             address: "Main Road, Karachi",
             files,
+            primaryFileIndex: 0, // first uploaded file becomes the primary photo
             onProgress: (percent) => {
                 console.log(`Uploading images: ${percent}%`);
             },
@@ -41,6 +42,7 @@ async function run() {
         console.log("Complaint created:", createResponse.data);
 
         const complaint_id = createResponse.data.id;
+        const photos = createResponse.data.photos_detail; // [{ id, image_url, uploaded_at }, ...]
 
         const listMineResponse = await sdk.complaints.listMine({
             access_token,
@@ -48,6 +50,7 @@ async function run() {
 
         console.log("My complaints:", listMineResponse.data);
 
+        // Text-only update — no photo changes, so existing photos are left untouched.
         const updateResponse = await sdk.complaints.update({
             access_token,
             complaint_id,
@@ -56,8 +59,28 @@ async function run() {
 
         console.log("Complaint updated:", updateResponse.data);
 
-        // Add an image to an existing complaint.
-        const newFile = files[0];
+        // Combined update — keep one existing photo, add a new one, and
+        // mark the new one as primary, all in a single atomic request.
+        // Any existing photo whose id isn't listed in keepPhotoIds (and
+        // isn't a replacement target) is deleted server-side.
+        const secondFile = files[0];
+
+        if (photos.length > 0 && secondFile) {
+
+            const combinedUpdateResponse = await sdk.complaints.update({
+                access_token,
+                complaint_id,
+                keepPhotoIds: [photos[0].id],
+                newFiles: [secondFile],
+                primaryNewFileIndex: 0,
+            });
+
+            console.log("Complaint photos updated:", combinedUpdateResponse.data);
+
+        }
+
+        // Add another image to the complaint (standalone, image-only).
+        const newFile = files[1];
 
         if (newFile) {
 
@@ -68,6 +91,35 @@ async function run() {
             });
 
             console.log("Image added:", addImagesResponse.data);
+
+        }
+
+        // Replace one specific existing photo with a new file.
+        const replacementFile = files[2];
+
+        if (photos.length > 0 && replacementFile) {
+
+            const replaceImageResponse = await sdk.complaints.images.replace({
+                access_token,
+                complaint_id,
+                image_id: photos[0].id,
+                file: replacementFile,
+            });
+
+            console.log("Image replaced:", replaceImageResponse.data);
+
+        }
+
+        // Delete one specific photo (fails if it's the complaint's only photo).
+        if (photos.length > 1) {
+
+            const deleteImageResponse = await sdk.complaints.images.delete({
+                access_token,
+                complaint_id,
+                image_id: photos[1].id,
+            });
+
+            console.log("Image deleted:", deleteImageResponse.data);
 
         }
 

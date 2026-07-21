@@ -37,37 +37,17 @@ export class SDKNotInitializedError extends ApiError {
 /**
  * Required request data is missing.
  */
-export class IncompleteRequestDataError extends ApiError {
+export class InvalidRequestDataError extends ApiError {
 
-    static CODE = "INCOMPLETE_REQUEST_DATA";
+    static CODE = "INVALID_REQUEST_DATA";
 
     static DEFAULT_MESSAGE =
-        "Request data is incomplete.";
+        "Request data is invalid.";
 
-    /**
-     * @param {string|string[]|null} fields
-     */
-    constructor(fields = null) {
-
-        let message =
-            IncompleteRequestDataError.DEFAULT_MESSAGE;
-
-        if (typeof fields === "string") {
-
-            message =
-                `Missing required field: "${fields}".`;
-
-        }
-
-        else if (
-            Array.isArray(fields) &&
-            fields.length > 0
-        ) {
-
-            message =
-                `Missing required fields: ${fields.join(", ")}.`;
-
-        }
+    constructor(
+        message = InvalidRequestDataError.DEFAULT_MESSAGE,
+        fields = null,
+    ) {
 
         super(message);
 
@@ -77,6 +57,34 @@ export class IncompleteRequestDataError extends ApiError {
                 ? [fields]
                 : [];
     }
+
+    static unsupportedOperation(message) {
+        return new InvalidRequestDataError(message);
+    }
+
+    static missingFields(fields) {
+
+        const list = Array.isArray(fields)
+            ? fields
+            : [fields];
+
+        return new InvalidRequestDataError(
+            list.length === 1
+                ? `Missing required field: "${list[0]}".`
+                : `Missing required fields: ${list.join(", ")}.`,
+            list,
+        );
+
+    }
+
+    static atLeastOneRequired(subject = "field") {
+
+        return new InvalidRequestDataError(
+            `At least one ${subject} is required.`,
+        );
+
+    }
+
 }
 
 

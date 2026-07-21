@@ -20,7 +20,7 @@ import {
 import {
     toRequestDate,
 } from "../../utils/dateUtils.js";
-import { IncompleteRequestDataError } from "../../errors/RequestErrors.js";
+import { InvalideRequestDataError } from "../../errors/RequestErrors.js";
 
 
 function buildUpdateProfile(data) {
@@ -45,8 +45,8 @@ function buildUpdateProfile(data) {
     });
 
     if (Object.keys(payload).length === 0) {
-        throw new IncompleteRequestDataError(
-            "At least one profile field is required"
+        throw InvalidRequestDataError.atLeastOneRequired(
+            "profile field",
         );
     }
 

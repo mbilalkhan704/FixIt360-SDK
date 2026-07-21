@@ -17,6 +17,7 @@
  * @typedef {Object} ListApplicationsRequest
  * @property {string} access_token
  * @property {('pending'|'approved'|'rejected')} [status]
+ * @property {string|number} [reviewed_by]
  */
 
 /**
@@ -35,6 +36,9 @@
 /**
  * @typedef {Object} ListVolunteersRequest
  * @property {string} access_token
+ * @property {('active'|'inactive')} [status]
+ * @property {string|number} [approved_by]
+ * @property {string|number} [deactivated_by]
  */
 
 /**
@@ -53,6 +57,8 @@
 /**
  * @typedef {Object} ListReactivationRequestsRequest
  * @property {string} access_token
+ * @property {string} [status]
+ * @property {string|number} [reviewed_by]
  */
 
 /**
@@ -81,7 +87,9 @@ import {
 } from "../../core/headers.js";
 
 import VolunteerBuilders from "../../builders/admin/volunteerBuilders.js";
-
+import {
+    removeUndefinedFields
+} from "../../utils/objectHelpers.js"
 
 /**
  * Retrieves volunteer applications.
@@ -104,9 +112,10 @@ async function listApplicationsApi(data) {
             data.access_token,
         ),
 
-        params: {
+        query: removeUndefinedFields({
             status: data.status,
-        },
+            reviewed_by: data.reviewed_by,
+        }),
 
     });
 
@@ -194,6 +203,11 @@ async function listVolunteersApi(data) {
         headers: buildAuthorizationHeaders(
             data.access_token,
         ),
+        query: removeUndefinedFields({
+            status: data.status,
+            approved_by: data.approved_by,
+            deactivated_by: data.deactivated_by,
+        }),
 
     });
 
@@ -283,6 +297,10 @@ async function listReactivationRequestsApi(data) {
         headers: buildAuthorizationHeaders(
             data.access_token,
         ),
+        query: removeUndefinedFields({
+            status: data.status,
+            reviewed_by: data.reviewed_by,
+        }),
 
     });
 
@@ -356,11 +374,11 @@ async function reviewReactivationRequestApi(data) {
 
 export default {
 
-    listApplications: listApplicationsApi,
+    listVolunteerApplications: listApplicationsApi,
 
-    getApplication: getApplicationApi,
+    getVolunteerApplication: getApplicationApi,
 
-    reviewApplication: reviewApplicationApi,
+    reviewVolunteerApplication: reviewApplicationApi,
 
     listVolunteers: listVolunteersApi,
 
@@ -368,13 +386,13 @@ export default {
 
     deactivateVolunteer: deactivateVolunteerApi,
 
-    listReactivationRequests:
+    listVolunteerReactivationRequests:
         listReactivationRequestsApi,
 
-    getReactivationRequest:
+    getVolunteerReactivationRequest:
         getReactivationRequestApi,
 
-    reviewReactivationRequest:
+    reviewVolunteerReactivationRequest:
         reviewReactivationRequestApi,
 
 };
