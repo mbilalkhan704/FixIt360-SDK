@@ -18,7 +18,7 @@
  *
  * @returns {Object}
  */
-export function buildHeaders({
+export function buildAuthorizationHeaders({
     accessToken = null,
     isMultipart = false,
 } = {}) {
