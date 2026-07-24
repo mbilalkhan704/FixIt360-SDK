@@ -9,6 +9,7 @@
  * ============================================================================
  */
 
+
 import {
     validateRequiredFields,
 } from "../../utils/validators.js";
@@ -20,7 +21,7 @@ import {
 import {
     toRequestDate,
 } from "../../utils/dateUtils.js";
-import { InvalideRequestDataError } from "../../errors/RequestErrors.js";
+import { InvalidRequestDataError } from "../../errors/RequestErrors.js";
 
 
 function buildUpdateProfile(data) {
