@@ -46,18 +46,9 @@
 
 
 import ENDPOINTS from "../../config/endpoints.js";
-
-import {
-    get,
-    patch,
-} from "../../core/request.js";
-
-import {
-    buildAuthorizationHeaders,
-} from "../../core/headers.js";
-
+import { get, patch } from "../../core/request.js";
+import { buildAuthorizationHeaders } from "../../core/headers.js";
 import StorageApi from "../storage/storageApi.js";
-
 import ProfileBuilders from "../../builders/accounts/profileBuilders.js";
 
 
@@ -94,8 +85,7 @@ async function getProfileApi(data) {
 /**
  * Updates the authenticated user's profile.
  *
- * If profile_picture is provided, the SDK uploads it to Cloudinary
- * automatically and sends the resulting profile_picture_key to the backend.
+ * If profile_picture is provided, the SDK handles the upload.
  *
  * ...
  *

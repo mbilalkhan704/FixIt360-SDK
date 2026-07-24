@@ -3,6 +3,8 @@
  * FixIt360 SDK
  * ----------------------------------------------------------------------------
  * Password API
+ * 
+ * Handles password related endpoints.
  * ============================================================================
  */
 
@@ -49,10 +51,8 @@
 
 
 import ENDPOINTS from "../../config/endpoints.js";
-
 import {
-    post,
-} from "../../core/request.js";
+    post} from "../../core/request.js";
 
 import {
     buildAuthorizationHeaders,
@@ -73,7 +73,7 @@ import PasswordBuilders from "../../builders/accounts/passwordBuilders.js";
  *
  * @example
  * await api.accounts.password.forgotPassword({
- *     email: "bilal@example.com",
+ *     email: "email@example.com",
  * });
  */
 async function forgotPasswordApi(data) {
@@ -101,7 +101,7 @@ async function forgotPasswordApi(data) {
  *
  * @example
  * await api.accounts.password.verifyPasswordResetOTP({
- *     email: "bilal@example.com",
+ *     email: "email@example.com",
  *     otp: "123456",
  * });
  */

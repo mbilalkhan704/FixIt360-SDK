@@ -13,7 +13,6 @@
  * @import {ApiResponse, AuthenticationData} from "../../types/typedefs.js"
  */
 
-
 /**
  * @typedef {Object} RegisterRequest
  * @property {string} first_name
@@ -60,15 +59,8 @@
 
 
 import ENDPOINTS from "../../config/endpoints.js";
-
-import {
-    post,
-} from "../../core/request.js";
-
-import {
-    buildAuthorizationHeaders,
-} from "../../core/headers.js";
-
+import { post } from "../../core/request.js";
+import { buildAuthorizationHeaders } from "../../core/headers.js";
 import AuthBuilders from "../../builders/accounts/authBuilders.js";
 
 
@@ -83,7 +75,7 @@ import AuthBuilders from "../../builders/accounts/authBuilders.js";
  * @returns {Promise<ApiResponse>}
  *
  * @example
- * await api.accounts.auth.register({...});
+ * await sdk.accounts.auth.register({...});
  */
 async function registerApi(data) {
 
@@ -99,7 +91,17 @@ async function registerApi(data) {
 
 
 /**
+ * Logs in a FixIt360 user account.
+ *
+ * Authentication:
+ *     Not Required
+ * 
+ * @param {LoginRequest} data
+ * 
  * @returns {Promise<ApiResponse & { data: AuthenticationData }>}
+ * 
+ * @example
+ * await sdk.accounts.auth.login({...});
  */
 async function loginApi(data) {
 
@@ -115,7 +117,17 @@ async function loginApi(data) {
 
 
 /**
+ * Logs in a FixIt360 user account through Google OAuth.
+ *
+ * Authentication:
+ *     Not Required
+ * 
+ * @param {GoogleLoginRequest} data 
+ * 
  * @returns {Promise<ApiResponse & { data: AuthenticationData }>}
+ * 
+ * @example
+ * await sdk.accounts.auth.googleLogin({...})
  */
 async function googleLoginApi(data) {
 
@@ -131,7 +143,17 @@ async function googleLoginApi(data) {
 
 
 /**
+ * Returns a new refresh and a new access token.
+ *
+ * Authentication:
+ *     Required
+ * 
+ * @param {RefreshTokenRequest} data
+ * 
  * @returns {Promise<ApiResponse & { data: AuthenticationData }>}
+ * 
+ * @example
+ * await sdk.accounts.auth.refreshToken({...})
  */
 async function refreshTokenApi(data) {
 
@@ -147,7 +169,16 @@ async function refreshTokenApi(data) {
 
 
 /**
+ * Logs out a FixIt360 user account.
+ *
+ * Authentication:
+ *     Required
+ * @param {LogoutRequest} data
+ *  
  * @returns {Promise<ApiResponse>}
+ * 
+ * @example
+ * await sdk.accounts.auth.logout({...})
  */
 async function logoutApi(data) {
 
