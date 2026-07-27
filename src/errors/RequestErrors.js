@@ -18,12 +18,9 @@ import ApiError from "./ApiError.js";
 export class SDKNotInitializedError extends ApiError {
 
     static CODE = "SDK_NOT_INITIALIZED";
-
-    static DEFAULT_MESSAGE =
-        "SDK has not been initialized. Call initializeSDK() before making API requests.";
+    static DEFAULT_MESSAGE = "SDK has not been initialized. Call initializeSDK() before making API requests.";
 
     constructor(message = null, cause = null) {
-
         super(
             message ??
             SDKNotInitializedError.DEFAULT_MESSAGE,
@@ -40,17 +37,10 @@ export class SDKNotInitializedError extends ApiError {
 export class InvalidRequestDataError extends ApiError {
 
     static CODE = "INVALID_REQUEST_DATA";
+    static DEFAULT_MESSAGE = "Request data is invalid.";
 
-    static DEFAULT_MESSAGE =
-        "Request data is invalid.";
-
-    constructor(
-        message = InvalidRequestDataError.DEFAULT_MESSAGE,
-        fields = null,
-    ) {
-
+    constructor(message = InvalidRequestDataError.DEFAULT_MESSAGE, fields = null) {
         super(message);
-
         this.fields = Array.isArray(fields)
             ? fields
             : fields
@@ -63,7 +53,6 @@ export class InvalidRequestDataError extends ApiError {
     }
 
     static missingFields(fields) {
-
         const list = Array.isArray(fields)
             ? fields
             : [fields];
@@ -74,15 +63,12 @@ export class InvalidRequestDataError extends ApiError {
                 : `Missing required fields: ${list.join(", ")}.`,
             list,
         );
-
     }
 
     static atLeastOneRequired(subject = "field") {
-
         return new InvalidRequestDataError(
             `At least one ${subject} is required.`,
         );
-
     }
 
 }
@@ -94,18 +80,16 @@ export class InvalidRequestDataError extends ApiError {
 export class InvalidSDKConfigurationError extends ApiError {
 
     static CODE = "INVALID_SDK_CONFIGURATION";
-
-    static DEFAULT_MESSAGE =
-        "The SDK configuration is invalid.";
+    static DEFAULT_MESSAGE = "The SDK configuration is invalid.";
 
     constructor(message = null, cause = null) {
-
         super(
             message ??
             InvalidSDKConfigurationError.DEFAULT_MESSAGE,
             cause,
         );
     }
+
 }
 
 
@@ -115,18 +99,16 @@ export class InvalidSDKConfigurationError extends ApiError {
 export class NetworkError extends ApiError {
 
     static CODE = "NETWORK_ERROR";
-
-    static DEFAULT_MESSAGE =
-        "Unable to connect to the server. Please check your internet connection.";
+    static DEFAULT_MESSAGE = "Unable to connect to the server. Please check your internet connection.";
 
     constructor(message = null, cause = null) {
-
         super(
             message ??
             NetworkError.DEFAULT_MESSAGE,
             cause,
         );
     }
+
 }
 
 
@@ -136,18 +118,16 @@ export class NetworkError extends ApiError {
 export class RequestTimeoutError extends ApiError {
 
     static CODE = "REQUEST_TIMEOUT";
-
-    static DEFAULT_MESSAGE =
-        "The request timed out.";
+    static DEFAULT_MESSAGE = "The request timed out.";
 
     constructor(message = null, cause = null) {
-
         super(
             message ??
             RequestTimeoutError.DEFAULT_MESSAGE,
             cause,
         );
     }
+
 }
 
 
@@ -157,18 +137,16 @@ export class RequestTimeoutError extends ApiError {
 export class InvalidResponseError extends ApiError {
 
     static CODE = "INVALID_RESPONSE";
-
-    static DEFAULT_MESSAGE =
-        "The server returned an unexpected response.";
+    static DEFAULT_MESSAGE = "The server returned an unexpected response.";
 
     constructor(message = null, cause = null) {
-
         super(
             message ??
             InvalidResponseError.DEFAULT_MESSAGE,
             cause,
         );
     }
+
 }
 
 
@@ -178,11 +156,9 @@ export class InvalidResponseError extends ApiError {
 export class ServerError extends ApiError {
 
     static CODE = "SERVER_ERROR";
-
     static DEFAULT_MESSAGE = "Internal server error";
 
     constructor(message = null, cause = null) {
-
         super(
             message ??
             ServerError.DEFAULT_MESSAGE,

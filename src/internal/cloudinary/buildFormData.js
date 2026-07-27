@@ -12,16 +12,22 @@
 
 
 /**
- * Builds Cloudinary upload FormData.
+ * @typedef {Object} CloudinaryUploadData
+ * @property {File|Blob} file
+ * @property {string} public_id
+ * @property {string} api_key
+ * @property {number|string} timestamp
+ * @property {string} signature
+ * @property {string} folder
+ * @property {string} [context]
+ */
+
+
+/**
+ * Builds the multipart `FormData` payload required for a
+ * Cloudinary upload.
  *
- * @param {Object} data
- * @param {File|Blob} data.file
- * @param {string} data.public_id
- * @param {string} data.api_key
- * @param {number|string} data.timestamp
- * @param {string} data.signature
- * @param {string} data.folder
- * @param {string} [data.context]
+ * @param {CloudinaryUploadData} data
  *
  * @returns {FormData}
  */

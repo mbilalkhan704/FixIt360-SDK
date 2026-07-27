@@ -11,18 +11,26 @@
  * ============================================================================
  */
 
+
 import { InvalidResponseError } from "../errors/RequestErrors.js";
+
+
+/**
+ * @typedef {Object} SDKResponse
+ * @property {boolean} success
+ * @property {string} message
+ * @property {Object|null} data
+ */
+
 
 /**
  * Parses and validates a backend response.
  *
  * @param {import("axios").AxiosResponse} response
  *
- * @returns {{
- *      success: boolean,
- *      message: string,
- *      data: any,
- * }}
+ * @returns {SDKResponse}
+ *
+ * @throws {InvalidResponseError}
  */
 export function parseResponse(response) {
 
@@ -38,18 +46,12 @@ export function parseResponse(response) {
             throw new Error("Response body is missing.");
         }
 
-        for (const field of [
-            "success",
-            "message",
-            "data",
-        ]) {
-
+        for (const field of ["success", "message", "data",]) {
             if (!(field in body)) {
                 throw new Error(
                     `Missing "${field}" field.`,
                 );
             }
-
         }
 
         return {

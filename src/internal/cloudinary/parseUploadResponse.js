@@ -15,11 +15,29 @@ import { InvalidResponseError } from "../../errors/RequestErrors.js";
 
 
 /**
- * Parses a profile picture upload response.
+ * @typedef {Object} ProfilePictureUploadResponse
+ * @property {boolean} success
+ * @property {string} message
+ * @property {{profile_picture_key: string}} data
+ */
+
+/**
+ * @typedef {Object} ComplaintImagesUploadResponse
+ * @property {boolean} success
+ * @property {string} message
+ * @property {{complaint_image_keys: string[]}} data
+ */
+
+
+/**
+ * Parses a Cloudinary profile picture upload response into
+ * the SDK's standard response format.
  *
  * @param {Object} response
  *
- * @returns {Object}
+ * @returns {ProfilePictureUploadResponse}
+ *
+ * @throws {InvalidResponseError}
  */
 export function parseProfilePictureUploadResponse(response) {
 
@@ -30,29 +48,25 @@ export function parseProfilePictureUploadResponse(response) {
     }
 
     return {
-
         success: true,
-
         message: "Profile picture uploaded successfully.",
-
         data: {
-
-            profile_picture_key:
-                response.public_id,
-
+            profile_picture_key: response.public_id,
         },
-
     };
 
 }
 
 
 /**
- * Parses multiple complaint image upload responses.
+ * Parses Cloudinary complaint image upload responses into
+ * the SDK's standard response format.
  *
- * @param {Array<Object>} responses
+ * @param {Object[]} responses
  *
- * @returns {Object}
+ * @returns {ComplaintImagesUploadResponse}
+ *
+ * @throws {InvalidResponseError}
  */
 export function parseComplaintImagesUploadResponse(responses) {
 
@@ -75,15 +89,11 @@ export function parseComplaintImagesUploadResponse(responses) {
     });
 
     return {
-
         success: true,
-
         message: "Complaint images uploaded successfully.",
-
         data: {
             complaint_image_keys,
         },
-
     };
 
 }

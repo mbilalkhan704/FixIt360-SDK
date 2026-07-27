@@ -14,12 +14,8 @@ import { InvalidSDKConfigurationError } from "../errors/RequestErrors.js";
 
 
 const DEFAULT_CONFIG = Object.freeze({
-
     /**
      * Base URL of the backend server.
-     *
-     * Example:
-     * https://api.fixit360.org
      */
     baseURL: "",
 
@@ -35,11 +31,7 @@ const DEFAULT_CONFIG = Object.freeze({
 });
 
 
-let currentConfig = {
-    ...DEFAULT_CONFIG,
-};
-
-
+let currentConfig = { ...DEFAULT_CONFIG };
 let initialized = false;
 
 

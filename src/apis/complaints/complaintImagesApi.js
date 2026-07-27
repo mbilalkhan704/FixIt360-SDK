@@ -64,19 +64,18 @@ async function addImagesApi(data) {
     });
 
     return post({
-
-        endpoint: ENDPOINTS.COMPLAINTS.ADD_IMAGES(data.complaint_id),
-
+        endpoint: ENDPOINTS.COMPLAINTS.ADD_IMAGES(
+            data.complaint_id
+        ),
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
         payload: ComplaintBuilders.buildAddImages({
             image_keys: uploadResponse.data.complaint_image_keys,
             primary_index: data.primaryNewFileIndex,
         }),
-
     });
+
 }
 
 
@@ -107,17 +106,16 @@ async function replaceImageApi(data) {
     });
 
     return patch({
-
-        endpoint: ENDPOINTS.COMPLAINTS.REPLACE_IMAGE(data.complaint_id, data.image_id),
-
+        endpoint: ENDPOINTS.COMPLAINTS.REPLACE_IMAGE(
+            data.complaint_id,
+            data.image_id
+        ),
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
         payload: ComplaintBuilders.buildReplaceImage({
             new_image_key: uploadResponse.data.complaint_image_keys[0],
         }),
-
     });
 
 }
@@ -142,28 +140,20 @@ async function deleteImageApi(data) {
     ])
 
     return del({
-
-        endpoint:
-            ENDPOINTS.COMPLAINTS.DELETE_IMAGE(
-                data.complaint_id,
-                data.image_id,
-            ),
-
+        endpoint: ENDPOINTS.COMPLAINTS.DELETE_IMAGE(
+            data.complaint_id,
+            data.image_id,
+        ),
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
     });
 
 }
 
 
 export default {
-
     add: addImagesApi,
-
     replace: replaceImageApi,
-
     delete: deleteImageApi,
-
 };

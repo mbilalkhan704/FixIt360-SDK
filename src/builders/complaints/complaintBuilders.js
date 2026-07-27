@@ -1,19 +1,43 @@
-import {
-    validateRequiredFields,
-} from "../../utils/validators.js";
+/**
+ * ============================================================================
+ * FixIt360 SDK
+ * ----------------------------------------------------------------------------
+ * Complaint Payload Builders
+ *
+ * Responsible for validating input and constructing payloads for
+ * complaint related operations.
+ * ============================================================================
+ */
 
-import {
-    removeUndefinedFields,
-} from "../../utils/objectHelpers.js";
-import {
-    InvalidRequestDataError
-} from "../../errors/RequestErrors.js"
+
+import { validateRequiredFields } from "../../utils/validators.js";
+import { removeUndefinedFields } from "../../utils/objectHelpers.js";
+import { InvalidRequestDataError } from "../../errors/RequestErrors.js"
 
 
+/**
+ * Builds the request payload for creating a complaint.
+ *
+ * Validates the required complaint fields and constructs the
+ * image payload from the uploaded image keys, marking the
+ * primary image when specified.
+ *
+ * @param {Object} data
+ * @param {string[]} imageKeys
+ *
+ * @returns {Object}
+ *
+ * @throws {InvalidRequestDataError}
+ */
 function buildCreateComplaint(data, imageKeys) {
 
     validateRequiredFields(data, [
-        "title", "description", "category", "latitude", "longitude", "address",
+        "title",
+        "description",
+        "category",
+        "latitude",
+        "longitude",
+        "address",
     ]);
 
     if (!Array.isArray(imageKeys) || imageKeys.length === 0) {
@@ -42,15 +66,21 @@ function buildCreateComplaint(data, imageKeys) {
 
 
 /**
- * Builds the payload for updating a complaint. Assembles the `images`
- * action array from keepPhotoIds / replacements / newFiles, mirroring
- * the backend's final-desired-state contract. Omitting an existing
- * photo_id (i.e. not listing it in keepPhotoIds or replacements)
- * deletes it server-side.
+ * Builds the request payload for updating a complaint.
+ *
+ * Constructs the `images` action array from the supplied
+ * image operations, mirroring the backend's final-desired-state
+ * contract. Existing images omitted from both `keepPhotoIds`
+ * and `replacements` are deleted by the backend.
+ *
  * @param {Object} data
- * @param {Array<string>} [imageKeys]
+ * @param {Object} [options]
+ * @param {string[]} [options.newImageKeys]
+ * @param {string[]} [options.replacementImageKeys]
  *
  * @returns {Object}
+ *
+ * @throws {InvalidRequestDataError}
  */
 function buildUpdateComplaint(data, { newImageKeys = [], replacementImageKeys = [] } = {}) {
 
@@ -92,6 +122,7 @@ function buildUpdateComplaint(data, { newImageKeys = [], replacementImageKeys = 
         }
 
         const newItemsStartIndex = images.length;
+
         if (hasNew) {
             newImageKeys.forEach((key) => images.push({ new_image_key: key }));
         }
@@ -114,15 +145,19 @@ function buildUpdateComplaint(data, { newImageKeys = [], replacementImageKeys = 
 
 
 function buildDeleteComplaint(data) {
+
     return {
         deletion_reason: data.deletion_reason
     };
+
 }
 
 
 function buildAddImages(data) {
 
-    validateRequiredFields(data, ["image_keys"]);
+    validateRequiredFields(data, [
+        "image_keys",
+    ]);
 
     const images = data.image_keys.map((key, index) => {
         const image = { new_image_key: key };
@@ -137,14 +172,6 @@ function buildAddImages(data) {
 }
 
 
-/**
- * Builds the payload for replacing a complaint image.
- * Field name matches backend PhotoReplaceSerializer (new_image_key).
- *
- * @param {Object} data
- *
- * @returns {Object}
- */
 function buildReplaceImage(data) {
 
     validateRequiredFields(data, [

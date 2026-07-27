@@ -9,19 +9,29 @@
  * ============================================================================
  */
 
+
 /**
- * Builds standard request headers.
- *
- * @param {Object} options
- * @param {string|null} options.accessToken
- * @param {boolean} options.isMultipart
- *
- * @returns {Object}
+ * @typedef {Object} AuthorizationHeaders
+ * @property {string} Accept
+ * @property {string} [Content-Type]
+ * @property {string} [Authorization]
  */
-export function buildAuthorizationHeaders({
-    accessToken = null,
-    isMultipart = false,
-} = {}) {
+
+
+/**
+ * Builds the standard HTTP request headers.
+ *
+ * Adds the `Authorization` header when an access token is
+ * provided. Omits the `Content-Type` header for multipart
+ * requests so it can be set automatically by the HTTP client.
+ *
+ * @param {Object} [options]
+ * @param {string|null} [options.accessToken]
+ * @param {boolean} [options.isMultipart=false]
+ *
+ * @returns {AuthorizationHeaders}
+ */
+export function buildAuthorizationHeaders({ accessToken = null, isMultipart = false, } = {}) {
 
     const headers = {
         Accept: "application/json",
@@ -36,4 +46,5 @@ export function buildAuthorizationHeaders({
     }
 
     return headers;
+
 }

@@ -24,12 +24,6 @@ import { uploadProfilePicture, uploadComplaintImages } from "./cloudinaryUpload.
  * @param {Function} [data.onProgress]
  *
  * @returns {Promise<FixIt360Response>}
- *
- * @example
- * await api.storage.uploadProfilePicture({
- *     access_token,
- *     file,
- * });
  */
 async function uploadProfilePictureApi(data) {
 
@@ -50,12 +44,6 @@ async function uploadProfilePictureApi(data) {
  * @param {Function} [data.onProgress]
  *
  * @returns {Promise<FixIt360Response>}
- *
- * @example
- * await api.storage.uploadComplaintImages({
- *     access_token,
- *     files,
- * });
  */
 async function uploadComplaintImagesApi(data) {
 
@@ -65,9 +53,6 @@ async function uploadComplaintImagesApi(data) {
 
 
 export default {
-
     uploadProfilePicture: uploadProfilePictureApi,
-
     uploadComplaintImages: uploadComplaintImagesApi,
-
 };

@@ -8,33 +8,28 @@
  * ============================================================================
  */
 
-import {
-    InvalidRequestDataError,
-} from "../errors/RequestErrors.js";
+
+import { InvalidRequestDataError } from "../errors/RequestErrors.js";
 
 
 /**
- * Ensures all required fields are present.
+ * Validates that all required fields are present.
+ *
+ * A field is considered missing if its value is `undefined`,
+ * `null`, or an empty string.
  *
  * @param {Object} data
  * @param {string[]} requiredFields
+ *
+ * @throws {InvalidRequestDataError}
  */
-export function validateRequiredFields(
-    data,
-    requiredFields,
-) {
+export function validateRequiredFields(data, requiredFields) {
 
     const missingFields = [];
 
     for (const field of requiredFields) {
-
         const value = data[field];
-
-        if (
-            value === undefined ||
-            value === null ||
-            value === ""
-        ) {
+        if (value === undefined || value === null || value === "") {
             missingFields.push(field);
         }
     }
@@ -44,13 +39,15 @@ export function validateRequiredFields(
             missingFields,
         );
     }
+
 }
 
 
 /**
- * Returns true if the value exists.
+ * Returns whether the supplied value is present.
  *
- * Undefined, null and empty strings are considered missing.
+ * Values of `undefined`, `null`, and empty strings are
+ * considered missing.
  *
  * @param {*} value
  *
@@ -58,16 +55,15 @@ export function validateRequiredFields(
  */
 export function hasValue(value) {
 
-    return !(
-        value === undefined ||
-        value === null ||
-        value === ""
-    );
+    return !(value === undefined || value === null || value === "");
+
 }
 
 
 /**
- * Ensures the supplied value is an object.
+ * Returns whether the supplied value is a plain object.
+ *
+ * Arrays and `null` are not considered objects.
  *
  * @param {*} value
  *
@@ -75,16 +71,13 @@ export function hasValue(value) {
  */
 export function isObject(value) {
 
-    return (
-        value !== null &&
-        typeof value === "object" &&
-        !Array.isArray(value)
-    );
+    return (value !== null && typeof value === "object" && !Array.isArray(value));
+
 }
 
 
 /**
- * Ensures the supplied value is an array.
+ * Returns whether the supplied value is an array.
  *
  * @param {*} value
  *
@@ -93,11 +86,14 @@ export function isObject(value) {
 export function isArray(value) {
 
     return Array.isArray(value);
+
 }
 
 
 /**
- * Returns true if a string contains non-whitespace characters.
+ * Returns whether the supplied value is a non-empty string.
+ *
+ * Strings containing only whitespace are considered empty.
  *
  * @param {*} value
  *
@@ -105,49 +101,44 @@ export function isArray(value) {
  */
 export function isNonEmptyString(value) {
 
-    return (
-        typeof value === "string" &&
-        value.trim().length > 0
-    );
+    return (typeof value === "string" && value.trim().length > 0);
+
 }
 
 
 /**
- * Ensures the supplied value is a File or Blob.
+ * Validates that the supplied value is a File or Blob.
  *
  * @param {*} file
  *
- * @throws {TypeError}
+ * @throws {InvalidRequestDataError}
  */
 export function validateFile(file) {
 
-    if (
-        typeof File !== "undefined" &&
-        file instanceof File
-    ) {
+    if (typeof File !== "undefined" && file instanceof File) {
         return;
     }
 
-    if (
-        typeof Blob !== "undefined" &&
-        file instanceof Blob
-    ) {
+    if (typeof Blob !== "undefined" && file instanceof Blob) {
         return;
     }
 
-    throw new TypeError(
+    throw new InvalidRequestDataError(
         "Expected a File or Blob.",
     );
 }
 
 
 /**
- * Ensures the supplied value is a non-empty array
- * containing only valid File or Blob objects.
+ * Validates an array of File or Blob objects.
+ *
+ * Ensures the array length is within the configured bounds
+ * and that every element is a valid File or Blob.
  *
  * @param {*} files
+ * @param {{min?: number, max?: number}} [options]
  *
- * @throws {TypeError}
+ * @throws {InvalidRequestDataError}
  */
 export function validateFiles(files, { min = 1, max = Infinity } = {}) {
 
@@ -180,13 +171,14 @@ export function validateFiles(files, { min = 1, max = Infinity } = {}) {
 
 
 /**
- * Ensures the supplied value is a callback function.
+ * Validates an optional callback function.
  *
- * Undefined callbacks are allowed.
+ * If provided, the value must be a function. `undefined`
+ * is allowed.
  *
  * @param {*} callback
  *
- * @throws {TypeError}
+ * @throws {InvalidRequestDataError}
  */
 export function validateCallback(callback) {
 
@@ -195,68 +187,70 @@ export function validateCallback(callback) {
     }
 
     if (typeof callback !== "function") {
-        throw new TypeError(
+        throw new InvalidRequestDataError(
             "Expected callback to be a function.",
         );
     }
+
 }
 
 
 /**
- * Ensures each availability slot has start_time strictly
- * before end_time.
+ * Validates an array of availability slots.
  *
- * Mirrors the backend's per-slot time-order check so callers
- * get fast, clear feedback before hitting the network. Does
- * not duplicate the backend's max-duration rule, since that
- * limit lives only on the backend and could drift out of sync
- * if hardcoded here.
+ * Ensures each slot contains `start_time` and `end_time`
+ * strings, and that `start_time` is strictly before
+ * `end_time`.
  *
- * @param {Array<{day: string, start_time: string, end_time: string}>} slots
+ * This mirrors the backend's per-slot time-order validation
+ * without duplicating backend-specific duration limits.
  *
- * @throws {TypeError}
+ * @param {{day: string, start_time: string, end_time: string}[]} slots
+ *
+ * @throws {InvalidRequestDataError}
  */
 export function validateAvailabilitySlots(slots) {
 
     if (!Array.isArray(slots) || slots.length === 0) {
-        throw new TypeError(
+        throw new InvalidRequestDataError(
             'Expected "availabilities" to be a non-empty array of availability slots. ' +
             'Example: [{ day: "monday", start_time: "16:00", end_time: "18:00" }].'
         );
     }
 
     for (const slot of slots) {
-
-        if (
-            !slot ||
-            typeof slot.start_time !== "string" ||
-            typeof slot.end_time !== "string"
-        ) {
-            throw new TypeError(
+        if (!slot || typeof slot.start_time !== "string" || typeof slot.end_time !== "string") {
+            throw new InvalidRequestDataError(
                 "Each availability slot requires start_time and end_time.",
             );
         }
 
         if (slot.start_time >= slot.end_time) {
-            throw new TypeError(
+            throw new InvalidRequestDataError(
                 `start_time (${slot.start_time}) must be before end_time (${slot.end_time}).`,
             );
         }
-
     }
 
 }
 
 
+/**
+ * Validates that the supplied primary index is within the
+ * bounds of the given array.
+ *
+ * @param {Array} array
+ * @param {number} primaryIndex
+ *
+ * @throws {InvalidRequestDataError}
+ */
 export function validatePrimaryIndex(array, primaryIndex) {
-    if (
-        !Number.isInteger(primaryIndex) ||
-        primaryIndex < 0 ||
-        primaryIndex >= array.length
-    ) {
+
+    if (!Number.isInteger(primaryIndex) || primaryIndex < 0 || primaryIndex >= array.length) {
         throw new InvalidRequestDataError(
             "primaryIndex is out of bounds of the array.",
             "primaryIndex"
         );
     }
+
 }

@@ -42,13 +42,10 @@ import VolunteerBuilders from "../../builders/volunteer/volunteerBuilders.js";
 async function getVolunteerStatusApi(data) {
 
     return get({
-
         endpoint: ENDPOINTS.VOLUNTEER.STATUS,
-
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
     });
 
 }
@@ -67,43 +64,11 @@ async function getVolunteerStatusApi(data) {
 async function applyApi(data) {
 
     return post({
-
         endpoint: ENDPOINTS.VOLUNTEER.APPLY,
-
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
-        payload:
-            VolunteerBuilders.buildVolunteerApplication(
-                data,
-            ),
-
-    });
-
-}
-
-
-/**
- * Retrieves the authenticated volunteer profile.
- *
- * Authentication:
- *     Required
- *
- * @param {GetVolunteerProfileRequest} data
- *
- * @returns {Promise<ApiResponse>}
- */
-async function getProfileApi(data) {
-
-    return get({
-
-        endpoint: ENDPOINTS.VOLUNTEER.PROFILE,
-
-        headers: buildAuthorizationHeaders({
-            accessToken: data.access_token,
-        }),
-
+        payload: VolunteerBuilders.buildVolunteerApplication(data),
     });
 
 }
@@ -122,19 +87,33 @@ async function getProfileApi(data) {
 async function updateAvailabilitiesApi(data) {
 
     return put({
-
-        endpoint:
-            ENDPOINTS.VOLUNTEER.UPDATE_AVAILABILITY,
-
+        endpoint: ENDPOINTS.VOLUNTEER.UPDATE_AVAILABILITY,
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
+        payload: VolunteerBuilders.buildAvailabilityUpdate(data),
+    });
 
-        payload:
-            VolunteerBuilders.buildAvailabilityUpdate(
-                data,
-            ),
+}
 
+
+/**
+ * Retrieves the authenticated volunteer profile.
+ *
+ * Authentication:
+ *     Required
+ *
+ * @param {GetVolunteerProfileRequest} data
+ *
+ * @returns {Promise<ApiResponse>}
+ */
+async function getProfileApi(data) {
+
+    return get({
+        endpoint: ENDPOINTS.VOLUNTEER.PROFILE,
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
     });
 
 }
@@ -153,19 +132,11 @@ async function updateAvailabilitiesApi(data) {
 async function resignApi(data) {
 
     return patch({
-
-        endpoint:
-            ENDPOINTS.VOLUNTEER.RESIGN,
-
+        endpoint: ENDPOINTS.VOLUNTEER.RESIGN,
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
-        payload:
-            VolunteerBuilders.buildVolunteerResignation(
-                data,
-            ),
-
+        payload: VolunteerBuilders.buildVolunteerResignation(data),
     });
 
 }
@@ -184,38 +155,21 @@ async function resignApi(data) {
 async function requestReactivationApi(data) {
 
     return post({
-
-        endpoint:
-            ENDPOINTS.VOLUNTEER.REACTIVATION_REQUEST,
-
+        endpoint: ENDPOINTS.VOLUNTEER.REACTIVATION_REQUEST,
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
-        payload:
-            VolunteerBuilders
-                .buildVolunteerReactivationRequest(
-                    data,
-                ),
-
+        payload: VolunteerBuilders.buildVolunteerReactivationRequest(data),
     });
 
 }
 
 
 export default {
-
     getVolunteerStatus: getVolunteerStatusApi,
-
     apply: applyApi,
-
-    getProfile: getProfileApi,
-
     updateAvailabilities: updateAvailabilitiesApi,
-
+    getProfile: getProfileApi,
     resign: resignApi,
-
-    requestReactivation:
-        requestReactivationApi,
-
+    requestReactivation: requestReactivationApi,
 };

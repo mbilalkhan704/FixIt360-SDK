@@ -9,6 +9,7 @@
  * ============================================================================
  */
 
+
 import { getAxiosClient } from "./axiosClient.js";
 import parseResponse from "./response.js";
 import { NetworkError, RequestTimeoutError, ServerError } from "../errors/RequestErrors.js";
@@ -16,6 +17,8 @@ import { NetworkError, RequestTimeoutError, ServerError } from "../errors/Reques
 
 /**
  * Executes an HTTP request.
+ * 
+ * @typedef {import("./response.js").SDKResponse} SDKResponse
  *
  * @param {Object} options
  * @param {"GET"|"POST"|"PUT"|"PATCH"|"DELETE"} options.method
@@ -25,17 +28,13 @@ import { NetworkError, RequestTimeoutError, ServerError } from "../errors/Reques
  * @param {Object} [options.headers]
  * @param {number} [options.timeout]
  *
- * @returns {Promise<Object>}
+ * @returns {Promise<SDKResponse>}
+ *
+ * @throws {ServerError}
+ * @throws {RequestTimeoutError}
+ * @throws {NetworkError}
  */
-async function executeRequest({
-    method,
-    endpoint,
-    payload,
-    query,
-    headers = {},
-    timeout,
-
-}) {
+async function executeRequest({ method, endpoint, payload, query, headers = {}, timeout }) {
 
     const client = getAxiosClient();
 
@@ -48,25 +47,19 @@ async function executeRequest({
             headers,
             timeout,
         });
-
         return parseResponse(response);
-
     }
 
     catch (error) {
-
         /*
          * Axios received a response from the server.
          */
         if (error.response) {
-
             if (error.response.status >= 500) {
-
                 throw new ServerError(
                     error.response.data?.message,
                     error,
                 );
-
             }
 
             /*
@@ -74,19 +67,16 @@ async function executeRequest({
              * Return them unchanged.
              */
             return parseResponse(error.response);
-
         }
 
         /*
          * Request timed out.
          */
         if (error.code === "ECONNABORTED") {
-
             throw new RequestTimeoutError(
                 null,
                 error,
             );
-
         }
 
         /*
@@ -96,87 +86,56 @@ async function executeRequest({
             error.message,
             error,
         );
-
     }
 
 }
 
 
-/**
- * Executes a GET request.
- */
 export function get(options) {
 
     return executeRequest({
-
         ...options,
-
         method: "GET",
-
     });
 
 }
 
 
-/**
- * Executes a POST request.
- */
 export function post(options) {
 
     return executeRequest({
-
         ...options,
-
         method: "POST",
-
     });
 
 }
 
 
-/**
- * Executes a PUT request.
- */
 export function put(options) {
 
     return executeRequest({
-
         ...options,
-
         method: "PUT",
-
     });
 
 }
 
 
-/**
- * Executes a PATCH request.
- */
 export function patch(options) {
 
     return executeRequest({
-
         ...options,
-
         method: "PATCH",
-
     });
 
 }
 
 
-/**
- * Executes a DELETE request.
- */
 export function del(options) {
 
     return executeRequest({
-
         ...options,
-
         method: "DELETE",
-
     });
 
 }

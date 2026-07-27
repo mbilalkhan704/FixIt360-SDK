@@ -35,22 +35,14 @@ import ProfileBuilders from "../../builders/accounts/profileBuilders.js";
  * @param {GetProfileRequest} data
  *
  * @returns {Promise<ApiResponse & { data: ProfileData }>}
- *
- * @example
- * await api.accounts.profile.getProfile({
- *     access_token,
- * });
  */
 async function getProfileApi(data) {
 
     return get({
-
         endpoint: ENDPOINTS.ACCOUNTS.PROFILE,
-
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
     });
 
 }
@@ -58,72 +50,46 @@ async function getProfileApi(data) {
 
 /**
  * Updates the authenticated user's profile.
- *
  * If profile_picture is provided, the SDK handles the upload.
  *
- * ...
+ * Authentication:
+ *     Required
  *
  * @param {UpdateProfileRequest} data
  *
  * @returns {Promise<ApiResponse & { data: ProfileData }>}
- *
- * @example
- * const file = fileInput.files[0];
- *
- * await api.accounts.profile.updateProfile({
- *     access_token,
- *     first_name: "Muhammad",
- *     last_name: "Bilal",
- *     file,
- * });
  */
 async function updateProfileApi(data) {
 
     let profile_picture_key;
 
     if (data.profile_picture) {
-
         const uploadResponse =
             await StorageApi.uploadProfilePicture({
-
                 access_token: data.access_token,
-
                 file: data.profile_picture,
-
                 onProgress: data.onProgress,
-
             });
 
         profile_picture_key =
             uploadResponse.data.profile_picture_key;
-
     }
 
     return patch({
-
         endpoint: ENDPOINTS.ACCOUNTS.PROFILE,
-
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
         payload: ProfileBuilders.buildUpdateProfile({
-
             ...data,
-
             profile_picture_key,
-
         }),
-
     });
 
 }
 
 
 export default {
-
     getProfile: getProfileApi,
-
     updateProfile: updateProfileApi,
-
 };

@@ -41,18 +41,12 @@ import AuthBuilders from "../../builders/accounts/authBuilders.js";
  * @param {RegisterRequest} data
  *
  * @returns {Promise<ApiResponse>}
- *
- * @example
- * await sdk.accounts.auth.register({...});
  */
 async function registerApi(data) {
 
     return post({
-
         endpoint: ENDPOINTS.ACCOUNTS.REGISTER,
-
         payload: AuthBuilders.register(data),
-
     });
 
 }
@@ -67,18 +61,12 @@ async function registerApi(data) {
  * @param {LoginRequest} data
  * 
  * @returns {Promise<ApiResponse & { data: AuthenticationData }>}
- * 
- * @example
- * await sdk.accounts.auth.login({...});
  */
 async function loginApi(data) {
 
     return post({
-
         endpoint: ENDPOINTS.ACCOUNTS.LOGIN,
-
         payload: AuthBuilders.login(data),
-
     });
 
 }
@@ -93,19 +81,13 @@ async function loginApi(data) {
  * @param {GoogleLoginRequest} data 
  * 
  * @returns {Promise<ApiResponse & { data: AuthenticationData }>}
- * 
- * @example
- * await sdk.accounts.auth.googleLogin({...})
  */
 async function googleLoginApi(data) {
 
     return post({
-
         endpoint: ENDPOINTS.ACCOUNTS.GOOGLE_LOGIN,
-
         payload: AuthBuilders.googleLogin(data),
-
-    });
+    })
 
 }
 
@@ -119,18 +101,12 @@ async function googleLoginApi(data) {
  * @param {RefreshTokenRequest} data
  * 
  * @returns {Promise<ApiResponse & { data: AuthenticationData }>}
- * 
- * @example
- * await sdk.accounts.auth.refreshToken({...})
  */
 async function refreshTokenApi(data) {
 
     return post({
-
         endpoint: ENDPOINTS.ACCOUNTS.REFRESH_TOKEN,
-
         payload: AuthBuilders.refreshToken(data),
-
     });
 
 }
@@ -141,25 +117,19 @@ async function refreshTokenApi(data) {
  *
  * Authentication:
  *     Required
+ * 
  * @param {LogoutRequest} data
  *  
  * @returns {Promise<ApiResponse>}
- * 
- * @example
- * await sdk.accounts.auth.logout({...})
  */
 async function logoutApi(data) {
 
     return post({
-
         endpoint: ENDPOINTS.ACCOUNTS.LOGOUT,
-
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
         payload: AuthBuilders.logout(data),
-
     });
 
 }
@@ -170,25 +140,19 @@ async function logoutApi(data) {
  *
  * Authentication:
  *     Required
+ * 
  * @param {VerifyEmailRequest} data
  *  
  * @returns {Promise<ApiResponse>}
- * 
- * @example
- * await sdk.accounts.auth.verifyEmail({...})
  */
 async function verifyEmailApi(data) {
 
     return post({
-
         endpoint: ENDPOINTS.ACCOUNTS.VERIFY_EMAIL,
-
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
         payload: AuthBuilders.verifyEmail(data),
-
     });
 
 }
@@ -199,42 +163,29 @@ async function verifyEmailApi(data) {
  *
  * Authentication:
  *     Required
+ * 
  * @param {ResendEmailOTPRequest} data
  *  
  * @returns {Promise<ApiResponse>}
- * 
- * @example
- * await sdk.accounts.auth.resendEmailOTP({...})
  */
 async function resendEmailOTPApi(data) {
 
     return post({
-
         endpoint: ENDPOINTS.ACCOUNTS.RESEND_EMAIL_OTP,
-
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
     });
 
 }
 
 
 export default {
-
     register: registerApi,
-
     login: loginApi,
-
     googleLogin: googleLoginApi,
-
     refreshToken: refreshTokenApi,
-
     logout: logoutApi,
-
     verifyEmail: verifyEmailApi,
-
     resendEmailOTP: resendEmailOTPApi,
-
 };

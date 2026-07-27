@@ -46,19 +46,14 @@ import { validateRequiredFields } from "../../utils/validators.js";
 async function listApplicationsApi(data) {
 
     return get({
-
-        endpoint:
-            ENDPOINTS.ADMIN.VOLUNTEER_APPLICATIONS.LIST,
-
+        endpoint: ENDPOINTS.ADMIN.VOLUNTEER_APPLICATIONS.LIST,
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
         query: removeUndefinedFields({
             status: data.status,
             reviewed_by: data.reviewed_by,
         }),
-
     });
 
 }
@@ -82,16 +77,12 @@ async function getApplicationApi(data) {
     ]);
 
     return get({
-
-        endpoint:
-            ENDPOINTS.ADMIN.VOLUNTEER_APPLICATIONS.DETAIL(
-                data.application_id,
-            ),
-
+        endpoint: ENDPOINTS.ADMIN.VOLUNTEER_APPLICATIONS.DETAIL(
+            data.application_id,
+        ),
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
     });
 
 }
@@ -116,21 +107,13 @@ async function reviewApplicationApi(data) {
     ])
 
     return patch({
-
-        endpoint:
-            ENDPOINTS.ADMIN.VOLUNTEER_APPLICATIONS.REVIEW(
-                data.application_id,
-            ),
-
+        endpoint: ENDPOINTS.ADMIN.VOLUNTEER_APPLICATIONS.REVIEW(
+            data.application_id,
+        ),
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
-        payload:
-            VolunteerBuilders.buildApplicationReview(
-                data,
-            ),
-
+        payload: VolunteerBuilders.buildApplicationReview(data),
     });
 
 }
@@ -149,10 +132,7 @@ async function reviewApplicationApi(data) {
 async function listVolunteersApi(data) {
 
     return get({
-
-        endpoint:
-            ENDPOINTS.ADMIN.VOLUNTEERS.LIST,
-
+        endpoint: ENDPOINTS.ADMIN.VOLUNTEERS.LIST,
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
@@ -161,7 +141,6 @@ async function listVolunteersApi(data) {
             approved_by: data.approved_by,
             deactivated_by: data.deactivated_by,
         }),
-
     });
 
 }
@@ -184,16 +163,12 @@ async function getVolunteerApi(data) {
     ])
 
     return get({
-
-        endpoint:
-            ENDPOINTS.ADMIN.VOLUNTEERS.DETAIL(
-                data.volunteer_id,
-            ),
-
+        endpoint: ENDPOINTS.ADMIN.VOLUNTEERS.DETAIL(
+            data.volunteer_id,
+        ),
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
     });
 
 }
@@ -217,21 +192,13 @@ async function deactivateVolunteerApi(data) {
     ])
 
     return patch({
-
-        endpoint:
-            ENDPOINTS.ADMIN.VOLUNTEERS.DEACTIVATE(
-                data.volunteer_id,
-            ),
-
+        endpoint: ENDPOINTS.ADMIN.VOLUNTEERS.DEACTIVATE(
+            data.volunteer_id,
+        ),
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
-        payload:
-            VolunteerBuilders.buildVolunteerDeactivation(
-                data,
-            ),
-
+        payload: VolunteerBuilders.buildVolunteerDeactivation(data),
     });
 
 }
@@ -250,12 +217,7 @@ async function deactivateVolunteerApi(data) {
 async function listReactivationRequestsApi(data) {
 
     return get({
-
-        endpoint:
-            ENDPOINTS.ADMIN
-                .VOLUNTEER_REACTIVATION_REQUESTS
-                .LIST,
-
+        endpoint: ENDPOINTS.ADMIN.VOLUNTEER_REACTIVATION_REQUESTS.LIST,
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
@@ -263,7 +225,6 @@ async function listReactivationRequestsApi(data) {
             status: data.status,
             reviewed_by: data.reviewed_by,
         }),
-
     });
 
 }
@@ -286,18 +247,12 @@ async function getReactivationRequestApi(data) {
     ])
 
     return get({
-
-        endpoint:
-            ENDPOINTS.ADMIN
-                .VOLUNTEER_REACTIVATION_REQUESTS
-                .DETAIL(
-                    data.request_id,
-                ),
-
+        endpoint: ENDPOINTS.ADMIN.VOLUNTEER_REACTIVATION_REQUESTS.DETAIL(
+            data.request_id,
+        ),
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
     });
 
 }
@@ -321,49 +276,26 @@ async function reviewReactivationRequestApi(data) {
     ])
 
     return patch({
-
-        endpoint:
-            ENDPOINTS.ADMIN
-                .VOLUNTEER_REACTIVATION_REQUESTS
-                .REVIEW(
-                    data.request_id,
-                ),
-
+        endpoint: ENDPOINTS.ADMIN.VOLUNTEER_REACTIVATION_REQUESTS.REVIEW(
+            data.request_id,
+        ),
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
-        payload:
-            VolunteerBuilders.buildReactivationReview(
-                data,
-            ),
-
+        payload: VolunteerBuilders.buildReactivationReview(data),
     });
 
 }
 
 
 export default {
-
     listVolunteerApplications: listApplicationsApi,
-
     getVolunteerApplication: getApplicationApi,
-
     reviewVolunteerApplication: reviewApplicationApi,
-
     listVolunteers: listVolunteersApi,
-
     getVolunteer: getVolunteerApi,
-
     deactivateVolunteer: deactivateVolunteerApi,
-
-    listVolunteerReactivationRequests:
-        listReactivationRequestsApi,
-
-    getVolunteerReactivationRequest:
-        getReactivationRequestApi,
-
-    reviewVolunteerReactivationRequest:
-        reviewReactivationRequestApi,
-
+    listVolunteerReactivationRequests: listReactivationRequestsApi,
+    getVolunteerReactivationRequest: getReactivationRequestApi,
+    reviewVolunteerReactivationRequest: reviewReactivationRequestApi,
 };

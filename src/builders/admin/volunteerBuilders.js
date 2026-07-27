@@ -9,18 +9,10 @@
  * ============================================================================
  */
 
-import {
-    validateRequiredFields,
-} from "../../utils/validators.js";
+
+import { validateRequiredFields } from "../../utils/validators.js";
 
 
-/**
- * Builds the payload for reviewing a volunteer application.
- *
- * @param {Object} data
- *
- * @returns {Object}
- */
 function buildApplicationReview(data) {
 
     let payload = {
@@ -39,40 +31,26 @@ function buildApplicationReview(data) {
 }
 
 
-/**
- * Builds the payload for deactivating a volunteer.
- *
- * @param {Object} data
- *
- * @returns {Object}
- */
 function buildVolunteerDeactivation(data) {
+
     return {
         reason: data.reason,
     };
+
 }
 
 
-/**
- * Builds the payload for reviewing a volunteer reactivation request.
- *
- * @param {Object} data
- *
- * @returns {Object}
- */
 function buildReactivationReview(data) {
+
     return {
         status: data.status,
     };
+
 }
 
 
 export default {
-
     buildApplicationReview,
-
     buildVolunteerDeactivation,
-
     buildReactivationReview,
-
 };

@@ -37,20 +37,12 @@ import PasswordBuilders from "../../builders/accounts/passwordBuilders.js";
  * @param {ForgotPasswordRequest} data
  *
  * @returns {Promise<ApiResponse>}
- *
- * @example
- * await api.accounts.password.forgotPassword({
- *     email: "email@example.com",
- * });
  */
 async function forgotPasswordApi(data) {
 
     return post({
-
         endpoint: ENDPOINTS.ACCOUNTS.FORGOT_PASSWORD,
-
         payload: PasswordBuilders.forgotPassword(data),
-
     });
 
 }
@@ -65,21 +57,12 @@ async function forgotPasswordApi(data) {
  * @param {VerifyPasswordResetOTPRequest} data
  *
  * @returns {Promise<ApiResponse & { data: PasswordResetTokenData }>}
- *
- * @example
- * await api.accounts.password.verifyPasswordResetOTP({
- *     email: "email@example.com",
- *     otp: "123456",
- * });
  */
 async function verifyPasswordResetOTPApi(data) {
 
     return post({
-
         endpoint: ENDPOINTS.ACCOUNTS.VERIFY_PASSWORD_RESET_OTP,
-
         payload: PasswordBuilders.verifyPasswordResetOTP(data),
-
     });
 
 }
@@ -94,22 +77,12 @@ async function verifyPasswordResetOTPApi(data) {
  * @param {ResetPasswordRequest} data
  *
  * @returns {Promise<ApiResponse>}
- *
- * @example
- * await api.accounts.password.resetPassword({
- *     password_reset_token,
- *     password: "NewPassword@123",
- *     confirm_password: "NewPassword@123",
- * });
  */
 async function resetPasswordApi(data) {
 
     return post({
-
         endpoint: ENDPOINTS.ACCOUNTS.RESET_PASSWORD,
-
         payload: PasswordBuilders.resetPassword(data),
-
     });
 
 }
@@ -125,25 +98,15 @@ async function resetPasswordApi(data) {
  * @param {ConfirmPasswordRequest} data
  *
  * @returns {Promise<ApiResponse>}
- *
- * @example
- * await api.accounts.password.confirmPassword({
- *     access_token,
- *     password: "Password@123",
- * });
  */
 async function confirmPasswordApi(data) {
 
     return post({
-
         endpoint: ENDPOINTS.ACCOUNTS.CONFIRM_PASSWORD,
-
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
         payload: PasswordBuilders.confirmPassword(data),
-
     });
 
 }
@@ -158,42 +121,24 @@ async function confirmPasswordApi(data) {
  * @param {ChangePasswordRequest} data
  *
  * @returns {Promise<ApiResponse>}
- *
- * @example
- * await api.accounts.password.changePassword({
- *     access_token,
- *     current_password: "OldPassword@123",
- *     new_password: "NewPassword@123",
- *     confirm_new_password: "NewPassword@123",
- * });
  */
 async function changePasswordApi(data) {
 
     return post({
-
         endpoint: ENDPOINTS.ACCOUNTS.CHANGE_PASSWORD,
-
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
         payload: PasswordBuilders.changePassword(data),
-
     });
 
 }
 
 
 export default {
-
     forgotPassword: forgotPasswordApi,
-
     verifyPasswordResetOTP: verifyPasswordResetOTPApi,
-
     resetPassword: resetPasswordApi,
-
     confirmPassword: confirmPasswordApi,
-
     changePassword: changePasswordApi,
-
 };

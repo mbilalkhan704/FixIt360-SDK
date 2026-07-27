@@ -9,14 +9,10 @@
  * ============================================================================
  */
 
-import {
-    validateRequiredFields,
-} from "../../utils/validators.js";
+
+import { validateRequiredFields } from "../../utils/validators.js";
 
 
-/**
- * Builds the Forgot Password payload.
- */
 function buildForgotPasswordPayload(data) {
 
     validateRequiredFields(data, [
@@ -29,9 +25,6 @@ function buildForgotPasswordPayload(data) {
 }
 
 
-/**
- * Builds the Verify Password Reset OTP payload.
- */
 function buildVerifyPasswordResetOTPPayload(data) {
 
     validateRequiredFields(data, [
@@ -46,9 +39,6 @@ function buildVerifyPasswordResetOTPPayload(data) {
 }
 
 
-/**
- * Builds the Reset Password payload.
- */
 function buildResetPasswordPayload(data) {
 
     validateRequiredFields(data, [
@@ -65,9 +55,6 @@ function buildResetPasswordPayload(data) {
 }
 
 
-/**
- * Builds the Confirm Password payload.
- */
 function buildConfirmPasswordPayload(data) {
 
     validateRequiredFields(data, [
@@ -80,9 +67,6 @@ function buildConfirmPasswordPayload(data) {
 }
 
 
-/**
- * Builds the Change Password payload.
- */
 function buildChangePasswordPayload(data) {
 
     validateRequiredFields(data, [
@@ -98,16 +82,11 @@ function buildChangePasswordPayload(data) {
     };
 }
 
+
 export default {
-
     forgotPassword: buildForgotPasswordPayload,
-
     verifyPasswordResetOTP: buildVerifyPasswordResetOTPPayload,
-
     resetPassword: buildResetPasswordPayload,
-
     confirmPassword: buildConfirmPasswordPayload,
-
     changePassword: buildChangePasswordPayload,
-
 };

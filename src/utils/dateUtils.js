@@ -8,20 +8,21 @@
  * ============================================================================
  */
 
-import {
-    InvalidRequestDataError,
-} from "../errors/RequestErrors.js";
+
+import { InvalidRequestDataError } from "../errors/RequestErrors.js";
 
 
 /**
- * Converts a JavaScript Date into YYYY-MM-DD.
+ * Converts a date value into the backend's `YYYY-MM-DD` format.
  *
- * Example:
- * 2026-07-20
+ * Accepts either a JavaScript `Date` object or a date string.
+ * If a `YYYY-MM-DD` string is supplied, it is returned unchanged.
  *
  * @param {Date|string} value
  *
  * @returns {string}
+ *
+ * @throws {InvalidRequestDataError}
  */
 export function toRequestDate(value) {
 
@@ -38,13 +39,10 @@ export function toRequestDate(value) {
         }
     }
 
-    const date =
-        value instanceof Date
-            ? value
-            : new Date(value);
+    const date = value instanceof Date ? value : new Date(value);
 
     if (Number.isNaN(date.getTime())) {
-        throw new TypeError(
+        throw new InvalidRequestDataError(
             "Invalid date format. Please supply a valid JavaScript Date object or a \"YYYY-MM-DD\" string."
         );
     }
@@ -54,10 +52,15 @@ export function toRequestDate(value) {
         String(date.getMonth() + 1).padStart(2, "0"),
         String(date.getDate()).padStart(2, "0"),
     ].join("-");
+
 }
 
+
 /**
- * Converts any backend ISO date into a JavaScript Date.
+ * Converts a backend date string into a JavaScript `Date`.
+ *
+ * Returns `null` when the supplied value is `null`,
+ * `undefined`, or an empty string.
  *
  * @param {string|null} value
  *
@@ -70,15 +73,17 @@ export function toDate(value) {
     }
 
     return new Date(value);
+
 }
 
 
 /**
- * Returns today's date in request format.
+ * Returns today's date in the backend's `YYYY-MM-DD` format.
  *
- * YYYY-MM-DD
+ * @returns {string}
  */
 export function today() {
 
     return toRequestDate(new Date());
+
 }

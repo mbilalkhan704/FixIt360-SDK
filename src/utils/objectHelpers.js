@@ -11,10 +11,10 @@
 
 
 /**
- * Removes undefined values from an object.
+ * Returns a new object with all `undefined` properties removed.
  *
- * Null values are preserved because the backend may interpret them
- * differently from omitted fields.
+ * Properties whose values are `null` are preserved, as the backend
+ * may interpret `null` differently from omitted fields.
  *
  * @param {Object} object
  *
@@ -23,20 +23,18 @@
 export function removeUndefinedFields(object) {
 
     return Object.fromEntries(
-
         Object.entries(object).filter(
-
             ([, value]) => value !== undefined
-
         )
-
     );
 
 }
 
 
 /**
- * Returns a new object containing only the specified keys.
+ * Returns a new object containing only the specified properties.
+ *
+ * Keys that do not exist on the source object are ignored.
  *
  * @param {Object} object
  * @param {string[]} keys
@@ -46,18 +44,16 @@ export function removeUndefinedFields(object) {
 export function pick(object, keys) {
 
     return Object.fromEntries(
-
         keys
             .filter(key => key in object)
             .map(key => [key, object[key]])
-
     );
 
 }
 
 
 /**
- * Returns a new object without the specified keys.
+ * Returns a new object with the specified properties omitted.
  *
  * @param {Object} object
  * @param {string[]} keys
@@ -67,22 +63,20 @@ export function pick(object, keys) {
 export function omit(object, keys) {
 
     return Object.fromEntries(
-
         Object.entries(object)
-
             .filter(
                 ([key]) => !keys.includes(key)
             )
-
     );
 
 }
 
 
 /**
- * Creates a deep clone of an object.
+ * Returns a deep clone of the supplied value.
  *
- * Uses the native structuredClone when available.
+ * Uses the native `structuredClone` implementation when available,
+ * falling back to JSON serialization otherwise.
  *
  * @param {*} value
  *
@@ -95,4 +89,5 @@ export function deepClone(value) {
     }
 
     return JSON.parse(JSON.stringify(value));
+
 }

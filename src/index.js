@@ -8,10 +8,12 @@
  * ============================================================================
  */
 
-import {
-    initializeSDK, getCurrentConfig, isInitialized
-} from "./config/config.js";
 
+import {
+    initializeSDK,
+    getCurrentConfig,
+    isInitialized
+} from "./config/config.js";
 import AccountsApi from "./apis/accounts/index.js";
 import ComplaintsApi from "./apis/complaints/index.js";
 import VolunteerApi from "./apis/volunteer/index.js";
@@ -26,19 +28,14 @@ class FixIt360SDK {
      * @param {Object} config
      */
     constructor(config) {
-
         if (config) {
             this.initializeSDK(config);
         }
 
         this.accounts = AccountsApi;
-
         this.complaints = ComplaintsApi;
-
         this.volunteer = VolunteerApi;
-
         this.admin = AdminApi;
-
     }
 
     initializeSDK(config) {

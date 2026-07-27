@@ -47,12 +47,62 @@ import complaintBuilders from "../../builders/complaints/complaintBuilders.js";
 async function listComplaintsApi(data) {
 
     return get({
-
         endpoint: ENDPOINTS.COMPLAINTS.LIST,
-
     });
 
 }
+
+
+/**
+ * Retrieves complaints created by the authenticated user.
+ *
+ * Authentication:
+ *     Required
+ *
+ * @param {ListMineRequest} data
+ *
+ * @returns {Promise<ApiResponse>}
+ */
+async function listMineApi(data) {
+
+    return get({
+        endpoint: ENDPOINTS.COMPLAINTS.MY_LIST,
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
+    });
+
+}
+
+
+/**
+ * Retrieves complaints created by a specific user.
+ *
+ * Authentication:
+ *     Required
+ *
+ * @param {ListByUserRequest} data
+ *
+ * @returns {Promise<ApiResponse>}
+ */
+async function listByUserApi(data) {
+
+    validateRequiredFields(data, [
+        "access_token",
+        "user_id"
+    ])
+
+    return get({
+        endpoint: ENDPOINTS.COMPLAINTS.USER_LIST(
+            data.user_id,
+        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
+    });
+
+}
+
 
 
 /**
@@ -72,15 +122,12 @@ async function getComplaintApi(data) {
     ])
 
     return get({
-
         endpoint: ENDPOINTS.COMPLAINTS.DETAIL(
             data.complaint_id,
         ),
-
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
     });
 
 }
@@ -91,6 +138,7 @@ async function getComplaintApi(data) {
  * in the same create request (backend requires >=1 photo at creation).
  *
  * @param {CreateComplaintRequest} data
+ * 
  * @returns {Promise<ApiResponse & { data: ComplaintData }>}
  */
 async function createComplaintApi(data) {
@@ -107,18 +155,14 @@ async function createComplaintApi(data) {
     });
 
     return post({
-
         endpoint: ENDPOINTS.COMPLAINTS.CREATE,
-
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
         payload: ComplaintBuilders.buildCreateComplaint(
             data,
             uploadResponse.data.complaint_image_keys,
         ),
-
     });
 
 }
@@ -129,6 +173,7 @@ async function createComplaintApi(data) {
  * (implicitly, via omission) deleting photos in one atomic request.
  *
  * @param {UpdateComplaintRequest} data
+ * 
  * @returns {Promise<ApiResponse & { data: ComplaintData }>}
  */
 async function updateComplaintApi(data) {
@@ -138,13 +183,8 @@ async function updateComplaintApi(data) {
         "complaint_id",
     ]);
 
-    const hasNew =
-        Array.isArray(data.newFiles) &&
-        data.newFiles.length > 0;
-
-    const hasReplacements =
-        Array.isArray(data.replacements) &&
-        data.replacements.length > 0;
+    const hasNew = Array.isArray(data.newFiles) && data.newFiles.length > 0;
+    const hasReplacements = Array.isArray(data.replacements) && data.replacements.length > 0;
 
     if (data.primaryNewFileIndex !== undefined) {
         validatePrimaryIndex(
@@ -168,7 +208,7 @@ async function updateComplaintApi(data) {
         data.primaryNewFileIndex !== undefined;
 
     if (!hasTextChanges && !hasImageChanges) {
-        throw new TypeError(
+        throw new InvalidRequestDataError(
             "At least one field must be updated."
         );
     }
@@ -178,31 +218,19 @@ async function updateComplaintApi(data) {
 
     if (hasImageChanges) {
 
-        const keptCount = Array.isArray(data.keepPhotoIds)
-            ? data.keepPhotoIds.length
-            : 0;
-
-        const replacementCount = Array.isArray(data.replacements)
-            ? data.replacements.length
-            : 0;
-
-        const newCount = Array.isArray(data.newFiles)
-            ? data.newFiles.length
-            : 0;
-
-        const finalPhotoCount =
-            keptCount +
-            replacementCount +
-            newCount;
+        const keptCount = Array.isArray(data.keepPhotoIds) ? data.keepPhotoIds.length : 0;
+        const replacementCount = Array.isArray(data.replacements) ? data.replacements.length : 0;
+        const newCount = Array.isArray(data.newFiles) ? data.newFiles.length : 0;
+        const finalPhotoCount = keptCount + replacementCount + newCount;
 
         if (finalPhotoCount < 1) {
-            throw new TypeError(
+            throw new InvalidRequestDataError(
                 "At least one photo is required."
             );
         }
 
         if (finalPhotoCount > MAX_COMPLAINT_PHOTOS) {
-            throw new TypeError(
+            throw new InvalidRequestDataError(
                 `Maximum ${MAX_COMPLAINT_PHOTOS} photos allowed.`
             );
         }
@@ -230,28 +258,19 @@ async function updateComplaintApi(data) {
                     onProgress: data.onProgress,
                 });
 
-            const uploadedKeys =
-                uploadResponse.data.complaint_image_keys;
-
-            newImageKeys =
-                uploadedKeys.slice(0, newCount);
-
-            replacementImageKeys =
-                uploadedKeys.slice(newCount);
+            const uploadedKeys = uploadResponse.data.complaint_image_keys;
+            newImageKeys = uploadedKeys.slice(0, newCount);
+            replacementImageKeys = uploadedKeys.slice(newCount);
         }
-
     }
 
     return patch({
-
         endpoint: ENDPOINTS.COMPLAINTS.UPDATE(
             data.complaint_id,
         ),
-
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
         payload: ComplaintBuilders.buildUpdateComplaint(
             data,
             {
@@ -259,10 +278,10 @@ async function updateComplaintApi(data) {
                 replacementImageKeys,
             },
         ),
-
     });
 
 }
+
 
 /**
  * Deletes a complaint.
@@ -283,93 +302,24 @@ async function deleteComplaintApi(data) {
     ])
 
     return del({
-
         endpoint: ENDPOINTS.COMPLAINTS.DELETE(
             data.complaint_id,
         ),
-
         headers: buildAuthorizationHeaders({
             accessToken: data.access_token,
         }),
-
         payload: complaintBuilders.buildDeleteComplaint(data)
-
-    });
-
-}
-
-
-/**
- * Retrieves complaints created by the authenticated user.
- *
- * Authentication:
- *     Required
- *
- * @param {ListMineRequest} data
- *
- * @returns {Promise<ApiResponse>}
- */
-async function listMineApi(data) {
-
-    return get({
-
-        endpoint: ENDPOINTS.COMPLAINTS.MY_LIST,
-
-        headers: buildAuthorizationHeaders({
-            accessToken: data.access_token,
-        }),
-
-    });
-
-}
-
-
-/**
- * Retrieves complaints created by a specific user.
- *
- * Authentication:
- *     Required
- *
- * @param {ListByUserRequest} data
- *
- * @returns {Promise<ApiResponse>}
- */
-async function listByUserApi(data) {
-
-    validateRequiredFields(data, [
-        "access_token",
-        "user_id"
-    ])
-
-    return get({
-
-        endpoint: ENDPOINTS.COMPLAINTS.USER_LIST(
-            data.user_id,
-        ),
-
-        headers: buildAuthorizationHeaders({
-            accessToken: data.access_token,
-        }),
-
     });
 
 }
 
 
 export default {
-
     list: listComplaintsApi,
-
     listMine: listMineApi,
-
     listByUser: listByUserApi,
-
     get: getComplaintApi,
-
     create: createComplaintApi,
-
     update: updateComplaintApi,
-
     delete: deleteComplaintApi,
-
 };
