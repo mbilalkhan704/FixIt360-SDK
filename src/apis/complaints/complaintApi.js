@@ -11,63 +11,15 @@
 
 /**
  * @import {ApiResponse} from "../../types/typedefs.js"
- */
-/**
- * @typedef {Object} ListComplaintsRequest
- */
-
-/**
- * @typedef {Object} GetComplaintRequest
- * @property {string} access_token
- * @property {number|string} complaint_id
- */
-
-/**
- * @typedef {Object} CreateComplaintRequest
- * @property {string} access_token
- * @property {string} title
- * @property {string} description
- * @property {number} latitude
- * @property {number} longitude
- * @property {string} category
- * @property {string} address
- * @property {Array<File|Blob>} files
- * @property {number} [primaryFileIndex] - index into files marking the primary photo; defaults to first if omitted
- * @property {function(number): void} [onProgress]
- */
-
-/**
- * @typedef {Object} UpdateComplaintRequest
- * @property {string} access_token
- * @property {number|string} complaint_id
- * @property {string} [title]
- * @property {string} [description]
- * @property {number} [latitude]
- * @property {number} [longitude]
- * @property {string} [address]
- * @property {Array<number|string>} [keepPhotoIds] - existing photo IDs to keep unchanged; any existing photo omitted here (and not in replacements) is deleted
- * @property {Array<File|Blob>} [newFiles] - new photos to add
- * @property {Array<{photo_id: number|string, file: File|Blob}>} [replacements] - existing photos to replace with a new file
- * @property {number|string} [primaryPhotoId] - marks an existing kept or replaced photo as primary
- * @property {number} [primaryNewFileIndex] - marks a photo from newFiles (by index) as primary
- * @property {function(number): void} [onProgress]
- */
-
-/**
- * @typedef {Object} DeleteComplaintRequest
- * @property {string} access_token
- * @property {number|string} complaint_id
- */
-
-/**
- * @typedef {Object} ListMineRequest
- * @property {string} access_token
- */
-
-/**
- * @typedef {Object} ListByUserRequest
- * @property {string} access_token
- * @property {number|string} user_id
+ * @import {
+ *      ListComplaintsRequest,
+ *      GetComplaintRequest,
+ *      CreateComplaintRequest,
+ *      UpdateComplaintRequest,
+ *      DeleteComplaintRequest,
+ *      ListMineRequest,
+ *      ListByUserRequest
+ * } from "../../types/typedefs.js"
  */
 
 
@@ -75,9 +27,11 @@ import ENDPOINTS from "../../config/endpoints.js";
 import { get, post, patch, del } from "../../core/request.js";
 import { buildAuthorizationHeaders } from "../../core/headers.js";
 import ComplaintBuilders from "../../builders/complaints/complaintBuilders.js";
-import { validateFiles } from "../../utils/validators.js";
+import { validateFiles, validatePrimaryIndex, validateRequiredFields } from "../../utils/validators.js";
 import StorageApi from "../storage/storageApi.js";
 import { MIN_COMPLAINT_PHOTOS, MAX_COMPLAINT_PHOTOS } from "../../config/constants.js";
+import { InvalidRequestDataError } from "../../errors/RequestErrors.js";
+import complaintBuilders from "../../builders/complaints/complaintBuilders.js";
 
 
 /**
@@ -113,15 +67,19 @@ async function listComplaintsApi(data) {
  */
 async function getComplaintApi(data) {
 
+    validateRequiredFields(data, [
+        "complaint_id"
+    ])
+
     return get({
 
         endpoint: ENDPOINTS.COMPLAINTS.DETAIL(
             data.complaint_id,
         ),
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
     });
 
@@ -152,7 +110,9 @@ async function createComplaintApi(data) {
 
         endpoint: ENDPOINTS.COMPLAINTS.CREATE,
 
-        headers: buildAuthorizationHeaders(data.access_token),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         payload: ComplaintBuilders.buildCreateComplaint(
             data,
@@ -173,50 +133,136 @@ async function createComplaintApi(data) {
  */
 async function updateComplaintApi(data) {
 
-    const hasNew = Array.isArray(data.newFiles) && data.newFiles.length > 0;
-    const hasReplacements = Array.isArray(data.replacements) && data.replacements.length > 0;
+    validateRequiredFields(data, [
+        "access_token",
+        "complaint_id",
+    ]);
+
+    const hasNew =
+        Array.isArray(data.newFiles) &&
+        data.newFiles.length > 0;
+
+    const hasReplacements =
+        Array.isArray(data.replacements) &&
+        data.replacements.length > 0;
+
+    if (data.primaryNewFileIndex !== undefined) {
+        validatePrimaryIndex(
+            Array.isArray(data.newFiles) ? data.newFiles : [],
+            data.primaryNewFileIndex
+        );
+    }
+
+    const hasTextChanges =
+        data.title !== undefined ||
+        data.description !== undefined ||
+        data.latitude !== undefined ||
+        data.longitude !== undefined ||
+        data.address !== undefined;
+
+    const hasImageChanges =
+        hasNew ||
+        hasReplacements ||
+        Array.isArray(data.keepPhotoIds) ||
+        data.primaryPhotoId !== undefined ||
+        data.primaryNewFileIndex !== undefined;
+
+    if (!hasTextChanges && !hasImageChanges) {
+        throw new TypeError(
+            "At least one field must be updated."
+        );
+    }
 
     let newImageKeys = [];
     let replacementImageKeys = [];
 
-    if (hasNew || hasReplacements) {
+    if (hasImageChanges) {
 
-        const filesToUpload = [
-            ...(hasNew ? data.newFiles : []),
-            ...(hasReplacements ? data.replacements.map((r) => r.file) : []),
-        ];
+        const keptCount = Array.isArray(data.keepPhotoIds)
+            ? data.keepPhotoIds.length
+            : 0;
 
-        validateFiles(filesToUpload, { min: 1, max: MAX_COMPLAINT_PHOTOS });
+        const replacementCount = Array.isArray(data.replacements)
+            ? data.replacements.length
+            : 0;
 
-        const uploadResponse = await StorageApi.uploadComplaintImages({
-            access_token: data.access_token,
-            files: filesToUpload,
-            onProgress: data.onProgress,
-        });
+        const newCount = Array.isArray(data.newFiles)
+            ? data.newFiles.length
+            : 0;
 
-        const uploadedKeys = uploadResponse.data.complaint_image_keys;
-        const newCount = hasNew ? data.newFiles.length : 0;
+        const finalPhotoCount =
+            keptCount +
+            replacementCount +
+            newCount;
 
-        newImageKeys = uploadedKeys.slice(0, newCount);
-        replacementImageKeys = uploadedKeys.slice(newCount);
+        if (finalPhotoCount < 1) {
+            throw new TypeError(
+                "At least one photo is required."
+            );
+        }
+
+        if (finalPhotoCount > MAX_COMPLAINT_PHOTOS) {
+            throw new TypeError(
+                `Maximum ${MAX_COMPLAINT_PHOTOS} photos allowed.`
+            );
+        }
+
+        if (hasNew || hasReplacements) {
+
+            const filesToUpload = [
+                ...(hasNew ? data.newFiles : []),
+                ...(hasReplacements
+                    ? data.replacements.map(
+                        (replacement) => replacement.file,
+                    )
+                    : []),
+            ];
+
+            validateFiles(filesToUpload, {
+                min: 1,
+                max: MAX_COMPLAINT_PHOTOS,
+            });
+
+            const uploadResponse =
+                await StorageApi.uploadComplaintImages({
+                    access_token: data.access_token,
+                    files: filesToUpload,
+                    onProgress: data.onProgress,
+                });
+
+            const uploadedKeys =
+                uploadResponse.data.complaint_image_keys;
+
+            newImageKeys =
+                uploadedKeys.slice(0, newCount);
+
+            replacementImageKeys =
+                uploadedKeys.slice(newCount);
+        }
 
     }
 
     return patch({
 
-        endpoint: ENDPOINTS.COMPLAINTS.UPDATE(data.complaint_id),
+        endpoint: ENDPOINTS.COMPLAINTS.UPDATE(
+            data.complaint_id,
+        ),
 
-        headers: buildAuthorizationHeaders(data.access_token),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         payload: ComplaintBuilders.buildUpdateComplaint(
             data,
-            { newImageKeys, replacementImageKeys },
+            {
+                newImageKeys,
+                replacementImageKeys,
+            },
         ),
 
     });
 
 }
-
 
 /**
  * Deletes a complaint.
@@ -230,15 +276,23 @@ async function updateComplaintApi(data) {
  */
 async function deleteComplaintApi(data) {
 
+    validateRequiredFields(data, [
+        "access_token",
+        "complaint_id",
+        "deletion_reason"
+    ])
+
     return del({
 
         endpoint: ENDPOINTS.COMPLAINTS.DELETE(
             data.complaint_id,
         ),
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
+
+        payload: complaintBuilders.buildDeleteComplaint(data)
 
     });
 
@@ -261,9 +315,9 @@ async function listMineApi(data) {
 
         endpoint: ENDPOINTS.COMPLAINTS.MY_LIST,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
     });
 
@@ -282,15 +336,20 @@ async function listMineApi(data) {
  */
 async function listByUserApi(data) {
 
+    validateRequiredFields(data, [
+        "access_token",
+        "user_id"
+    ])
+
     return get({
 
         endpoint: ENDPOINTS.COMPLAINTS.USER_LIST(
             data.user_id,
         ),
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
     });
 

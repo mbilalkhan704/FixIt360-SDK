@@ -220,7 +220,8 @@ export function validateAvailabilitySlots(slots) {
 
     if (!Array.isArray(slots) || slots.length === 0) {
         throw new TypeError(
-            "Expected at least one availability slot.",
+            'Expected "availabilities" to be a non-empty array of availability slots. ' +
+            'Example: [{ day: "monday", start_time: "16:00", end_time: "18:00" }].'
         );
     }
 
@@ -244,4 +245,18 @@ export function validateAvailabilitySlots(slots) {
 
     }
 
+}
+
+
+export function validatePrimaryIndex(array, primaryIndex) {
+    if (
+        !Number.isInteger(primaryIndex) ||
+        primaryIndex < 0 ||
+        primaryIndex >= array.length
+    ) {
+        throw new InvalidRequestDataError(
+            "primaryIndex is out of bounds of the array.",
+            "primaryIndex"
+        );
+    }
 }

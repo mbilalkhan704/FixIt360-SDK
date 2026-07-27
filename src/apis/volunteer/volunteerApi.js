@@ -11,73 +11,21 @@
 
 /**
  * @import {ApiResponse} from "../../types/typedefs.js"
- */
-/**
- * @typedef {Object} AvailabilitySlot
- * @property {(
- *   'monday'|
- *   'tuesday'|
- *   'wednesday'|
- *   'thursday'|
- *   'friday'|
- *   'saturday'|
- *   'sunday'
- * )} day
- * @property {string} start_time
- * @property {string} end_time
+ * @import {
+ *      AvailabilitySlot,
+ *      GetVolunteerStatusRequest,
+ *      ApplyVolunteerRequest,
+ *      GetVolunteerProfileRequest,
+ *      UpdateAvailabilityRequest,
+ *      VolunteerResignationRequest,
+ *      VolunteerReactivationRequest
+ * } from "../../types/typedefs.js"
  */
 
-/**
- * @typedef {Object} GetVolunteerStatusRequest
- * @property {string} access_token
- */
 
-/**
- * @typedef {Object} ApplyVolunteerRequest
- * @property {string} access_token
- * @property {string} motivation
- * @property {string} occupation
- * @property {string} emergency_contact
- * @property {string} [experience]
- * @property {string} [skills]
- * @property {AvailabilitySlot[]} availabilities
- */
-
-/**
- * @typedef {Object} GetVolunteerProfileRequest
- * @property {string} access_token
- */
-
-/**
- * @typedef {Object} UpdateAvailabilityRequest
- * @property {string} access_token
- * @property {AvailabilitySlot[]} availabilities
- */
-
-/**
- * @typedef {Object} VolunteerResignationRequest
- * @property {string} access_token
- * @property {string} [reason]
- */
-
-/**
- * @typedef {Object} VolunteerReactivationRequest
- * @property {string} access_token
- * @property {string} [reason]
- */
 import ENDPOINTS from "../../config/endpoints.js";
-
-import {
-    get,
-    put,
-    post,
-    patch,
-} from "../../core/request.js";
-
-import {
-    buildAuthorizationHeaders,
-} from "../../core/headers.js";
-
+import { get, put, post, patch } from "../../core/request.js";
+import { buildAuthorizationHeaders } from "../../core/headers.js";
 import VolunteerBuilders from "../../builders/volunteer/volunteerBuilders.js";
 
 
@@ -97,9 +45,9 @@ async function getVolunteerStatusApi(data) {
 
         endpoint: ENDPOINTS.VOLUNTEER.STATUS,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
     });
 
@@ -122,9 +70,9 @@ async function applyApi(data) {
 
         endpoint: ENDPOINTS.VOLUNTEER.APPLY,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         payload:
             VolunteerBuilders.buildVolunteerApplication(
@@ -152,9 +100,9 @@ async function getProfileApi(data) {
 
         endpoint: ENDPOINTS.VOLUNTEER.PROFILE,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
     });
 
@@ -178,9 +126,9 @@ async function updateAvailabilitiesApi(data) {
         endpoint:
             ENDPOINTS.VOLUNTEER.UPDATE_AVAILABILITY,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         payload:
             VolunteerBuilders.buildAvailabilityUpdate(
@@ -204,14 +152,14 @@ async function updateAvailabilitiesApi(data) {
  */
 async function resignApi(data) {
 
-    return post({
+    return patch({
 
         endpoint:
             ENDPOINTS.VOLUNTEER.RESIGN,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         payload:
             VolunteerBuilders.buildVolunteerResignation(
@@ -240,9 +188,9 @@ async function requestReactivationApi(data) {
         endpoint:
             ENDPOINTS.VOLUNTEER.REACTIVATION_REQUEST,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         payload:
             VolunteerBuilders

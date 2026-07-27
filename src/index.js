@@ -9,7 +9,7 @@
  */
 
 import {
-    initializeSDK,
+    initializeSDK, getCurrentConfig, isInitialized
 } from "./config/config.js";
 
 import AccountsApi from "./apis/accounts/index.js";
@@ -25,9 +25,11 @@ class FixIt360SDK {
      *
      * @param {Object} config
      */
-    constructor(config = {}) {
+    constructor(config) {
 
-        initializeSDK(config);
+        if (config) {
+            this.initializeSDK(config);
+        }
 
         this.accounts = AccountsApi;
 
@@ -37,6 +39,19 @@ class FixIt360SDK {
 
         this.admin = AdminApi;
 
+    }
+
+    initializeSDK(config) {
+        initializeSDK(config);
+        return this;
+    }
+
+    isInitialized() {
+        return isInitialized();
+    }
+
+    getCurrentConfig() {
+        return getCurrentConfig();
     }
 
 }

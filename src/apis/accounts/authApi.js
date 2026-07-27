@@ -10,51 +10,19 @@
 
 
 /**
- * @import {ApiResponse, AuthenticationData} from "../../types/typedefs.js"
- */
-
-/**
- * @typedef {Object} RegisterRequest
- * @property {string} first_name
- *     Required. User's first name. Maximum 50 characters.
- * @property {string} last_name
- *     Required. User's last name. Maximum 50 characters.
- * @property {('male'|'female'|'other')} gender
- *     Required.
- * @property {string|Date} date_of_birth
- *     Required. Accepts a Date object or a string in YYYY-MM-DD format.
- * @property {string} email
- *     Required. Email address used for authentication.
- * @property {string} password
- *     Required.
- * @property {string} confirm_password
- *     Required. Must match password.
- * @property {string} [phone_number]
- *     Optional.
- */
-
-/**
- * @typedef {Object} LoginRequest
- * @property {string} email
- * @property {string} password
- */
-
-/**
- * @typedef {Object} GoogleLoginRequest
- * @property {string} id_token
- *     Google Identity Services ID Token.
- */
-
-/**
- * @typedef {Object} RefreshTokenRequest
- * @property {string} refresh
- *     Refresh token previously issued by the SDK.
- */
-
-/**
- * @typedef {Object} LogoutRequest
- * @property {string} access_token
- * @property {string} refresh
+ * @import {
+ *      ApiResponse,
+*       AuthenticationData
+* } from "../../types/typedefs.js"
+ * @import {
+ *      RegisterRequest,
+ *      LoginRequest,
+ *      GoogleLoginRequest,
+ *      RefreshTokenRequest,
+ *      LogoutRequest,
+ *      VerifyEmailRequest,
+ *      ResendEmailOTPRequest
+ * } from "../../types/typedefs.js"
  */
 
 
@@ -186,11 +154,67 @@ async function logoutApi(data) {
 
         endpoint: ENDPOINTS.ACCOUNTS.LOGOUT,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         payload: AuthBuilders.logout(data),
+
+    });
+
+}
+
+
+/**
+ * Verifies a FixIt360 user email.
+ *
+ * Authentication:
+ *     Required
+ * @param {VerifyEmailRequest} data
+ *  
+ * @returns {Promise<ApiResponse>}
+ * 
+ * @example
+ * await sdk.accounts.auth.verifyEmail({...})
+ */
+async function verifyEmailApi(data) {
+
+    return post({
+
+        endpoint: ENDPOINTS.ACCOUNTS.VERIFY_EMAIL,
+
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
+
+        payload: AuthBuilders.verifyEmail(data),
+
+    });
+
+}
+
+
+/**
+ * Resends a FixIt360 user email verification OTP.
+ *
+ * Authentication:
+ *     Required
+ * @param {ResendEmailOTPRequest} data
+ *  
+ * @returns {Promise<ApiResponse>}
+ * 
+ * @example
+ * await sdk.accounts.auth.resendEmailOTP({...})
+ */
+async function resendEmailOTPApi(data) {
+
+    return post({
+
+        endpoint: ENDPOINTS.ACCOUNTS.RESEND_EMAIL_OTP,
+
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
     });
 
@@ -208,5 +232,9 @@ export default {
     refreshToken: refreshTokenApi,
 
     logout: logoutApi,
+
+    verifyEmail: verifyEmailApi,
+
+    resendEmailOTP: resendEmailOTPApi,
 
 };

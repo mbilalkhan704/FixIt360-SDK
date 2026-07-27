@@ -14,22 +14,12 @@
  * ============================================================================
  */
 
+
 import ENDPOINTS from "../../config/endpoints.js";
-
-import {
-    post,
-} from "../../core/request.js";
-
-import {
-    buildAuthorizationHeaders,
-} from "../../core/headers.js";
-
+import { get, post } from "../../core/request.js";
+import { buildAuthorizationHeaders } from "../../core/headers.js";
 import StorageBuilders from "../../builders/storage/storageBuilders.js";
-
-import {
-    uploadFile,
-} from "../../internal/cloudinary/uploadRequest.js";
-
+import { uploadFile } from "../../internal/cloudinary/uploadRequest.js";
 import {
     parseProfilePictureUploadResponse,
     parseComplaintImagesUploadResponse,
@@ -49,13 +39,13 @@ async function requestUploadSignature(
     accessToken,
 ) {
 
-    return post({
+    return get({
 
         endpoint,
 
-        headers: buildAuthorizationHeaders(
+        headers: buildAuthorizationHeaders({
             accessToken,
-        ),
+        }),
 
         payload: {},
 
@@ -114,53 +104,55 @@ export async function uploadProfilePicture(data) {
  */
 export async function uploadComplaintImages(data) {
 
-    const payload =
-        StorageBuilders.buildComplaintImagesUpload(data);
-
+    const payload = StorageBuilders.buildComplaintImagesUpload(data);
     const uploadResponses = [];
-
     const totalFiles = payload.files.length;
 
+    const totalBytes = payload.files.reduce(
+        (sum, file) => sum + file.size,
+        0,
+    );
+
+    let uploadedBytes = 0;
     for (let index = 0; index < totalFiles; index++) {
-
         const file = payload.files[index];
-
         const signatureResponse =
             await requestUploadSignature(
-
                 ENDPOINTS.STORAGE.COMPLAINT_IMAGES_SIGNATURE,
-
                 payload.access_token,
-
             );
 
+        let previousLoaded = 0;
         const uploadResponse =
             await uploadFile({
-
                 ...signatureResponse.data,
-
                 file,
-
+                onProgress({
+                    progress,
+                    loadedBytes,
+                    totalBytes: currentFileTotalBytes,
+                }) {
+                    uploadedBytes +=
+                        loadedBytes - previousLoaded;
+                    previousLoaded = loadedBytes;
+                    payload.onProgress?.({
+                        progress: Math.min(
+                            100,
+                            Math.round(
+                                (uploadedBytes / totalBytes) * 100,
+                            ),
+                        ),
+                        loadedBytes: uploadedBytes,
+                        totalBytes,
+                        currentFile: index + 1,
+                        totalFiles,
+                        currentFileProgress: progress,
+                        currentFileLoadedBytes: loadedBytes,
+                        currentFileTotalBytes,
+                    });
+                },
             });
-
-        uploadResponses.push(
-            uploadResponse,
-        );
-
-        if (
-            typeof payload.onProgress === "function"
-        ) {
-
-            payload.onProgress(
-
-                Math.round(
-                    ((index + 1) * 100) / totalFiles
-                ),
-
-            );
-
-        }
-
+        uploadResponses.push(uploadResponse);
     }
 
     return parseComplaintImagesUploadResponse(

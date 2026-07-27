@@ -23,15 +23,18 @@ import {
  */
 function buildApplicationReview(data) {
 
-    validateRequiredFields(data, [
-        "status",
-    ]);
+    let payload = {
+        status: data.status
+    }
 
-    return {
+    if (data.status === "rejected") {
+        validateRequiredFields(data, [
+            "reason"
+        ])
+        payload.review_reason = data.reason
+    }
 
-        status: data.status,
-
-    };
+    return payload;
 
 }
 
@@ -44,17 +47,9 @@ function buildApplicationReview(data) {
  * @returns {Object}
  */
 function buildVolunteerDeactivation(data) {
-
-    validateRequiredFields(data, [
-        "reason",
-    ]);
-
     return {
-
         reason: data.reason,
-
     };
-
 }
 
 
@@ -66,17 +61,9 @@ function buildVolunteerDeactivation(data) {
  * @returns {Object}
  */
 function buildReactivationReview(data) {
-
-    validateRequiredFields(data, [
-        "status",
-    ]);
-
     return {
-
         status: data.status,
-
     };
-
 }
 
 

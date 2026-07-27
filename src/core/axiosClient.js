@@ -8,16 +8,11 @@
  * ============================================================================
  */
 
+
 import axios from "axios";
+import { getCurrentConfig, isInitialized } from "../config/config.js";
+import { SDKNotInitializedError } from "../errors/RequestErrors.js";
 
-import {
-    getCurrentConfig,
-    isInitialized,
-} from "../config/config.js";
-
-import {
-    SDKNotInitializedError,
-} from "../errors/RequestErrors.js";
 
 /**
  * Shared Axios instance.

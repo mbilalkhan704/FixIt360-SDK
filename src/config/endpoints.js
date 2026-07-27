@@ -91,7 +91,7 @@ const ENDPOINTS = {
             `${ROUTES.STORAGE}/upload-signature/profile-picture/`,
 
         COMPLAINT_IMAGES_SIGNATURE:
-            `${ROUTES.STORAGE}/upload-signature/complaint-images/`,
+            `${ROUTES.STORAGE}/upload-signature/complaint/`,
     },
 
 

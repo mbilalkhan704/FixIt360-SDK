@@ -11,85 +11,27 @@
 
 /**
  * @import {ApiResponse} from "../../types/typedefs.js"
- */
-
-/**
- * @typedef {Object} ListApplicationsRequest
- * @property {string} access_token
- * @property {('pending'|'approved'|'rejected')} [status]
- * @property {string|number} [reviewed_by]
- */
-
-/**
- * @typedef {Object} GetApplicationRequest
- * @property {string} access_token
- * @property {number|string} application_id
- */
-
-/**
- * @typedef {Object} ReviewApplicationRequest
- * @property {string} access_token
- * @property {number|string} application_id
- * @property {('approved'|'rejected')} status
- */
-
-/**
- * @typedef {Object} ListVolunteersRequest
- * @property {string} access_token
- * @property {('active'|'inactive')} [status]
- * @property {string|number} [approved_by]
- * @property {string|number} [deactivated_by]
- */
-
-/**
- * @typedef {Object} GetVolunteerRequest
- * @property {string} access_token
- * @property {number|string} volunteer_id
- */
-
-/**
- * @typedef {Object} DeactivateVolunteerRequest
- * @property {string} access_token
- * @property {number|string} volunteer_id
- * @property {string} reason
- */
-
-/**
- * @typedef {Object} ListReactivationRequestsRequest
- * @property {string} access_token
- * @property {string} [status]
- * @property {string|number} [reviewed_by]
- */
-
-/**
- * @typedef {Object} GetReactivationRequestRequest
- * @property {string} access_token
- * @property {number|string} request_id
- */
-
-/**
- * @typedef {Object} ReviewReactivationRequest
- * @property {string} access_token
- * @property {number|string} request_id
- * @property {('approved'|'rejected')} status
+ * @import {
+ *      ListApplicationsRequest,
+ *      GetApplicationRequest,
+ *      ReviewApplicationRequest,
+ *      ListVolunteersRequest,
+ *      GetVolunteerRequest,
+ *      DeactivateVolunteerRequest,
+ *      ListReactivationRequestsRequest,
+ *      GetReactivationRequestRequest,
+ *      ReviewReactivationRequest
+ * } from "../../types/typedefs.js"
  */
 
 
 import ENDPOINTS from "../../config/endpoints.js";
-
-import {
-    get,
-    patch,
-} from "../../core/request.js";
-
-import {
-    buildAuthorizationHeaders,
-} from "../../core/headers.js";
-
+import { get, patch } from "../../core/request.js";
+import { buildAuthorizationHeaders } from "../../core/headers.js";
 import VolunteerBuilders from "../../builders/admin/volunteerBuilders.js";
-import {
-    removeUndefinedFields
-} from "../../utils/objectHelpers.js"
+import { removeUndefinedFields } from "../../utils/objectHelpers.js"
+import { validateRequiredFields } from "../../utils/validators.js";
+
 
 /**
  * Retrieves volunteer applications.
@@ -108,9 +50,9 @@ async function listApplicationsApi(data) {
         endpoint:
             ENDPOINTS.ADMIN.VOLUNTEER_APPLICATIONS.LIST,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         query: removeUndefinedFields({
             status: data.status,
@@ -134,6 +76,11 @@ async function listApplicationsApi(data) {
  */
 async function getApplicationApi(data) {
 
+    validateRequiredFields(data, [
+        "access_token",
+        "application_id",
+    ]);
+
     return get({
 
         endpoint:
@@ -141,9 +88,9 @@ async function getApplicationApi(data) {
                 data.application_id,
             ),
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
     });
 
@@ -162,6 +109,12 @@ async function getApplicationApi(data) {
  */
 async function reviewApplicationApi(data) {
 
+    validateRequiredFields(data, [
+        "access_token",
+        "application_id",
+        "status"
+    ])
+
     return patch({
 
         endpoint:
@@ -169,9 +122,9 @@ async function reviewApplicationApi(data) {
                 data.application_id,
             ),
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         payload:
             VolunteerBuilders.buildApplicationReview(
@@ -200,9 +153,9 @@ async function listVolunteersApi(data) {
         endpoint:
             ENDPOINTS.ADMIN.VOLUNTEERS.LIST,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
         query: removeUndefinedFields({
             status: data.status,
             approved_by: data.approved_by,
@@ -226,6 +179,10 @@ async function listVolunteersApi(data) {
  */
 async function getVolunteerApi(data) {
 
+    validateRequiredFields(data, [
+        "volunteer_id"
+    ])
+
     return get({
 
         endpoint:
@@ -233,9 +190,9 @@ async function getVolunteerApi(data) {
                 data.volunteer_id,
             ),
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
     });
 
@@ -254,6 +211,11 @@ async function getVolunteerApi(data) {
  */
 async function deactivateVolunteerApi(data) {
 
+    validateRequiredFields(data, [
+        "volunteer_id",
+        "reason"
+    ])
+
     return patch({
 
         endpoint:
@@ -261,9 +223,9 @@ async function deactivateVolunteerApi(data) {
                 data.volunteer_id,
             ),
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         payload:
             VolunteerBuilders.buildVolunteerDeactivation(
@@ -294,9 +256,9 @@ async function listReactivationRequestsApi(data) {
                 .VOLUNTEER_REACTIVATION_REQUESTS
                 .LIST,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
         query: removeUndefinedFields({
             status: data.status,
             reviewed_by: data.reviewed_by,
@@ -319,6 +281,10 @@ async function listReactivationRequestsApi(data) {
  */
 async function getReactivationRequestApi(data) {
 
+    validateRequiredFields(data, [
+        "request_id"
+    ])
+
     return get({
 
         endpoint:
@@ -328,9 +294,9 @@ async function getReactivationRequestApi(data) {
                     data.request_id,
                 ),
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
     });
 
@@ -349,6 +315,11 @@ async function getReactivationRequestApi(data) {
  */
 async function reviewReactivationRequestApi(data) {
 
+    validateRequiredFields(data, [
+        "request_id",
+        "status"
+    ])
+
     return patch({
 
         endpoint:
@@ -358,9 +329,9 @@ async function reviewReactivationRequestApi(data) {
                     data.request_id,
                 ),
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         payload:
             VolunteerBuilders.buildReactivationReview(

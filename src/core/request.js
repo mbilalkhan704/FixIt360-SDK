@@ -11,12 +11,7 @@
 
 import { getAxiosClient } from "./axiosClient.js";
 import parseResponse from "./response.js";
-
-import {
-    NetworkError,
-    RequestTimeoutError,
-    ServerError,
-} from "../errors/RequestErrors.js";
+import { NetworkError, RequestTimeoutError, ServerError } from "../errors/RequestErrors.js";
 
 
 /**
@@ -33,17 +28,11 @@ import {
  * @returns {Promise<Object>}
  */
 async function executeRequest({
-
     method,
-
     endpoint,
-
     payload,
-
     query,
-
     headers = {},
-
     timeout,
 
 }) {
@@ -51,21 +40,13 @@ async function executeRequest({
     const client = getAxiosClient();
 
     try {
-
         const response = await client({
-
             method,
-
             url: endpoint,
-
             data: payload,
-
             params: query,
-
             headers,
-
             timeout,
-
         });
 
         return parseResponse(response);

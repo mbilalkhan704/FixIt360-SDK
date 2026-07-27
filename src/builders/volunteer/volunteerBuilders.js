@@ -89,6 +89,9 @@ function buildAvailabilityUpdate(data) {
  */
 function buildVolunteerResignation(data) {
 
+    validateRequiredFields(data, [
+        "reason"
+    ])
     return removeUndefinedFields({
 
         reason: data.reason,
@@ -106,6 +109,10 @@ function buildVolunteerResignation(data) {
  * @returns {Object}
  */
 function buildVolunteerReactivationRequest(data) {
+
+    validateRequiredFields(data, [
+        "reason"
+    ])
 
     return removeUndefinedFields({
 

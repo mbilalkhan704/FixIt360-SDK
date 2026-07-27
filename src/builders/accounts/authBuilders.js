@@ -9,23 +9,10 @@
  * ============================================================================
  */
 
-import {
 
-    validateRequiredFields,
-
-} from "../../utils/validators.js";
-
-import {
-
-    removeUndefinedFields,
-
-} from "../../utils/objectHelpers.js";
-
-import {
-
-    toRequestDate,
-
-} from "../../utils/dateUtils.js";
+import { validateRequiredFields } from "../../utils/validators.js";
+import { removeUndefinedFields } from "../../utils/objectHelpers.js";
+import { toRequestDate } from "../../utils/dateUtils.js";
 
 
 /**
@@ -133,7 +120,7 @@ function buildRefreshTokenPayload(data) {
 
     validateRequiredFields(data, [
 
-        "refresh",
+        "refresh_token",
 
     ]);
 
@@ -154,14 +141,38 @@ function buildLogoutPayload(data) {
 
     validateRequiredFields(data, [
 
-        "refresh",
+        "refresh_token",
 
     ]);
 
     return {
 
         refresh:
-            data.refresh,
+            data.refresh_token,
+
+    };
+
+}
+
+
+/**
+ * Builds the verifyEmail payload.
+ */
+function buildVerifyEmailPayload(data) {
+
+    validateRequiredFields(data, [
+
+        "access_token",
+        "otp",
+
+    ]);
+
+    return {
+
+        access:
+            data.access_token,
+        otp:
+            data.otp,
 
     };
 
@@ -178,5 +189,7 @@ export default {
     refreshToken: buildRefreshTokenPayload,
 
     logout: buildLogoutPayload,
+
+    verifyEmail: buildVerifyEmailPayload,
 
 };

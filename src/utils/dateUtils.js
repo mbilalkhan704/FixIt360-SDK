@@ -45,7 +45,7 @@ export function toRequestDate(value) {
 
     if (Number.isNaN(date.getTime())) {
         throw new TypeError(
-            "Invalid date supplied."
+            "Invalid date format. Please supply a valid JavaScript Date object or a \"YYYY-MM-DD\" string."
         );
     }
 

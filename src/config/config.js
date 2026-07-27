@@ -9,6 +9,10 @@
  * ============================================================================
  */
 
+
+import { InvalidSDKConfigurationError } from "../errors/RequestErrors.js";
+
+
 const DEFAULT_CONFIG = Object.freeze({
 
     /**
@@ -30,11 +34,14 @@ const DEFAULT_CONFIG = Object.freeze({
     withCredentials: false,
 });
 
+
 let currentConfig = {
     ...DEFAULT_CONFIG,
 };
 
+
 let initialized = false;
+
 
 /**
  * Initializes the SDK.
@@ -49,13 +56,45 @@ let initialized = false;
  */
 export function initializeSDK(config = {}) {
 
-    initialized = true;
+    if (typeof config !== "object" || config === null || Array.isArray(config)) {
+        throw new InvalidSDKConfigurationError(
+            "SDK configuration must be an object."
+        );
+    }
 
-    currentConfig = {
+    const mergedConfig = {
         ...DEFAULT_CONFIG,
         ...config,
     };
+
+    if (
+        typeof mergedConfig.baseURL !== "string" ||
+        mergedConfig.baseURL.trim() === ""
+    ) {
+        throw new InvalidSDKConfigurationError(
+            '"baseURL" must be a non-empty string.'
+        );
+    }
+
+    if (
+        !Number.isFinite(mergedConfig.timeout) ||
+        mergedConfig.timeout <= 0
+    ) {
+        throw new InvalidSDKConfigurationError(
+            '"timeout" must be a positive number.'
+        );
+    }
+
+    if (typeof mergedConfig.withCredentials !== "boolean") {
+        throw new InvalidSDKConfigurationError(
+            '"withCredentials" must be a boolean.'
+        );
+    }
+
+    currentConfig = mergedConfig;
+    initialized = true;
 }
+
 
 /**
  * Returns the current SDK configuration.
@@ -65,6 +104,7 @@ export function initializeSDK(config = {}) {
 export function getCurrentConfig() {
     return currentConfig;
 }
+
 
 /**
  * Returns the current SDK status.

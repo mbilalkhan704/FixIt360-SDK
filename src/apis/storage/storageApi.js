@@ -4,14 +4,12 @@
  * ----------------------------------------------------------------------------
  * Storage API
  *
- * Public SDK interface for storage operations.
+ * Internal SDK use only.
  * ============================================================================
  */
 
-import {
-    uploadProfilePicture,
-    uploadComplaintImages,
-} from "./cloudinaryUpload.js";
+
+import { uploadProfilePicture, uploadComplaintImages } from "./cloudinaryUpload.js";
 
 
 /**

@@ -11,9 +11,7 @@
  * ============================================================================
  */
 
-import {
-    InvalidResponseError,
-} from "../errors/RequestErrors.js";
+import { InvalidResponseError } from "../errors/RequestErrors.js";
 
 /**
  * Parses and validates a backend response.
@@ -28,43 +26,51 @@ import {
  */
 export function parseResponse(response) {
 
-    if (!response || typeof response !== "object") {
+    try {
+
+        if (!response || typeof response !== "object") {
+            throw new Error("Response object is missing.");
+        }
+
+        const body = response.data;
+
+        if (!body || typeof body !== "object") {
+            throw new Error("Response body is missing.");
+        }
+
+        for (const field of [
+            "success",
+            "message",
+            "data",
+        ]) {
+
+            if (!(field in body)) {
+                throw new Error(
+                    `Missing "${field}" field.`,
+                );
+            }
+
+        }
+
+        return {
+            success: body.success,
+            message: body.message,
+            data: body.data,
+        };
+
+    } catch (error) {
+
+        if (error instanceof InvalidResponseError) {
+            throw error;
+        }
+
         throw new InvalidResponseError(
-            "Response object is missing."
+            error.message,
+            error,
         );
+
     }
 
-    const body = response.data;
-
-    if (!body || typeof body !== "object") {
-        throw new InvalidResponseError(
-            "Response body is missing."
-        );
-    }
-
-    if (!("success" in body)) {
-        throw new InvalidResponseError(
-            'Missing "success" field.'
-        );
-    }
-
-    if (!("message" in body)) {
-        throw new InvalidResponseError(
-            'Missing "message" field.'
-        );
-    }
-
-    if (!("data" in body)) {
-        throw new InvalidResponseError(
-            'Missing "data" field.'
-        );
-    }
-
-    return {
-        success: body.success,
-        message: body.message,
-        data: body.data,
-    };
 }
 
 export default parseResponse;

@@ -41,6 +41,7 @@ export async function uploadFile(data) {
 
         formData,
 
+
         {
 
             headers: {
@@ -66,7 +67,11 @@ export async function uploadFile(data) {
                     (event.loaded * 100) / event.total,
                 );
 
-                data.onProgress(progress);
+                data.onProgress?.({
+                    progress,
+                    loadedBytes: event.loaded,
+                    totalBytes: event.total,
+                });
 
             },
 

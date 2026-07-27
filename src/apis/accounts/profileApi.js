@@ -11,37 +11,11 @@
 
 /**
  * @import {ApiResponse} from "../../types/typedefs.js"
- */
-
-/**
- * @typedef {Object} GetProfileRequest
- * @property {string} access_token
- */
-
-/**
- * @typedef {Object} UpdateProfileRequest
- * @property {string} access_token
- * @property {string} [first_name]
- * @property {string} [last_name]
- * @property {('male'|'female'|'other')} [gender]
- * @property {string|Date} [date_of_birth]
- * @property {string} [phone_number]
- * @property {File|Blob} [file]
- * @property {function(number): void} [onProgress]
- */
-
-/**
- * @typedef {Object} ProfileData
- * @property {number} id
- * @property {string} email
- * @property {string} first_name
- * @property {string} last_name
- * @property {string} date_of_birth
- * @property {('male'|'female'|'other')} gender
- * @property {?string} phone_number
- * @property {?string} profile_picture_url
- * @property {string} role
- * @property {boolean} email_verified
+ * @import {
+ *      GetProfileRequest,
+ *      UpdateProfileRequest,
+ *      ProfileData
+ * } from "../../types/typedefs.js"
  */
 
 
@@ -73,9 +47,9 @@ async function getProfileApi(data) {
 
         endpoint: ENDPOINTS.ACCOUNTS.PROFILE,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
     });
 
@@ -107,14 +81,14 @@ async function updateProfileApi(data) {
 
     let profile_picture_key;
 
-    if (data.file) {
+    if (data.profile_picture) {
 
         const uploadResponse =
             await StorageApi.uploadProfilePicture({
 
                 access_token: data.access_token,
 
-                file: data.file,
+                file: data.profile_picture,
 
                 onProgress: data.onProgress,
 
@@ -129,9 +103,9 @@ async function updateProfileApi(data) {
 
         endpoint: ENDPOINTS.ACCOUNTS.PROFILE,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         payload: ProfileBuilders.buildUpdateProfile({
 

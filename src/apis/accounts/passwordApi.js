@@ -11,53 +11,20 @@
 
 /**
  * @import {ApiResponse} from "../../types/typedefs.js"
- */
-
-/**
- * @typedef {Object} ForgotPasswordRequest
- * @property {string} email
- */
-
-/**
- * @typedef {Object} VerifyPasswordResetOTPRequest
- * @property {string} otp
- */
-
-/**
- * @typedef {Object} PasswordResetTokenData
- * @property {string} password_reset_token
- */
-
-/**
- * @typedef {Object} ResetPasswordRequest
- * @property {string} password_reset_token
- * @property {string} password
- * @property {string} confirm_password
- */
-
-/**
- * @typedef {Object} ConfirmPasswordRequest
- * @property {string} access_token
- * @property {string} password
- */
-
-/**
- * @typedef {Object} ChangePasswordRequest
- * @property {string} access_token
- * @property {string} current_password
- * @property {string} new_password
- * @property {string} confirm_new_password
+ * @import {
+ *      ForgotPasswordRequest,
+ *      VerifyPasswordResetOTPRequest,
+ *      PasswordResetTokenData,
+ *      ResetPasswordRequest,
+ *      ConfirmPasswordRequest,
+ *      ChangePasswordRequest,
+ * } from "../../types/typedefs.js"
  */
 
 
 import ENDPOINTS from "../../config/endpoints.js";
-import {
-    post} from "../../core/request.js";
-
-import {
-    buildAuthorizationHeaders,
-} from "../../core/headers.js";
-
+import { post } from "../../core/request.js";
+import { buildAuthorizationHeaders } from "../../core/headers.js";
 import PasswordBuilders from "../../builders/accounts/passwordBuilders.js";
 
 
@@ -171,9 +138,9 @@ async function confirmPasswordApi(data) {
 
         endpoint: ENDPOINTS.ACCOUNTS.CONFIRM_PASSWORD,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         payload: PasswordBuilders.confirmPassword(data),
 
@@ -206,9 +173,9 @@ async function changePasswordApi(data) {
 
         endpoint: ENDPOINTS.ACCOUNTS.CHANGE_PASSWORD,
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         payload: PasswordBuilders.changePassword(data),
 

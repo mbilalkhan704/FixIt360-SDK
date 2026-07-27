@@ -82,12 +82,12 @@ sdk.accounts.auth.googleLogin({
 });
 
 sdk.accounts.auth.refreshToken({
-  refresh,    // required
+  refresh_token,    // required
 });
 
 sdk.accounts.auth.logout({
   access_token,   // required
-  refresh,        // required
+  refresh_token,        // required
 });
 
 sdk.accounts.password.forgotPassword({
@@ -124,7 +124,7 @@ sdk.accounts.profile.updateProfile({
   access_token,   // required
   first_name,     // required
   phone_number,   // required
-  file,           // required
+  profile_picture,           // required
 });
 ```
 

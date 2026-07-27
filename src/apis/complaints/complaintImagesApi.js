@@ -11,50 +11,22 @@
 
 /**
  * @import {ApiResponse} from "../../types/typedefs.js"
- */
-
-/**
- * @typedef {Object} AddComplaintImagesRequest
- * @property {string} access_token
- * @property {number|string} complaint_id
- * @property {Array<File|Blob>} files
- * @property {function(number): void} [onProgress]
- */
-
-/**
- * @typedef {Object} ReplaceComplaintImageRequest
- * @property {string} access_token
- * @property {number|string} complaint_id
- * @property {number|string} image_id
- * @property {File|Blob} file
- * @property {function(number): void} [onProgress]
- */
-
-/**
- * @typedef {Object} DeleteComplaintImageRequest
- * @property {string} access_token
- * @property {number|string} complaint_id
- * @property {number|string} image_id
+ * @import {
+ *      AddComplaintImagesRequest,
+ *      ReplaceComplaintImageRequest,
+ *      DeleteComplaintImageRequest
+ * } from "../../types/typedefs.js"
  */
 
 
 import ENDPOINTS from "../../config/endpoints.js";
-
-import {
-    post,
-    patch,
-    del,
-} from "../../core/request.js";
-
-import {
-    buildAuthorizationHeaders,
-} from "../../core/headers.js";
-
+import { post, patch, del } from "../../core/request.js";
+import { buildAuthorizationHeaders } from "../../core/headers.js";
 import StorageApi from "../storage/storageApi.js";
-
 import ComplaintBuilders from "../../builders/complaints/complaintBuilders.js";
-import { validateFile, validateFiles } from "../../utils/validators.js";
+import { validateFile, validateFiles, validatePrimaryIndex, validateRequiredFields } from "../../utils/validators.js";
 import { MIN_COMPLAINT_PHOTOS, MAX_COMPLAINT_PHOTOS } from "../../config/constants.js";
+
 
 /**
  * Adds images to a complaint.
@@ -68,10 +40,22 @@ import { MIN_COMPLAINT_PHOTOS, MAX_COMPLAINT_PHOTOS } from "../../config/constan
  */
 async function addImagesApi(data) {
 
+    validateRequiredFields(data, [
+        "access_token",
+        "complaint_id"
+    ]);
+
     validateFiles(data.files, {
         min: MIN_COMPLAINT_PHOTOS,
         max: MAX_COMPLAINT_PHOTOS,
     });
+
+    if (data.primaryNewFileIndex !== undefined) {
+        validatePrimaryIndex(
+            Array.isArray(data.files) ? data.files : [],
+            data.primaryNewFileIndex
+        );
+    }
 
     const uploadResponse = await StorageApi.uploadComplaintImages({
         access_token: data.access_token,
@@ -83,14 +67,16 @@ async function addImagesApi(data) {
 
         endpoint: ENDPOINTS.COMPLAINTS.ADD_IMAGES(data.complaint_id),
 
-        headers: buildAuthorizationHeaders(data.access_token),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         payload: ComplaintBuilders.buildAddImages({
-            complaint_image_keys: uploadResponse.data.complaint_image_keys,
+            image_keys: uploadResponse.data.complaint_image_keys,
+            primary_index: data.primaryNewFileIndex,
         }),
 
     });
-
 }
 
 
@@ -106,6 +92,12 @@ async function addImagesApi(data) {
  */
 async function replaceImageApi(data) {
 
+    validateRequiredFields(data, [
+        "access_token",
+        "complaint_id",
+        "image_id"
+    ])
+
     validateFile(data.file);
 
     const uploadResponse = await StorageApi.uploadComplaintImages({
@@ -116,9 +108,11 @@ async function replaceImageApi(data) {
 
     return patch({
 
-        endpoint: ENDPOINTS.COMPLAINTS.DELETE_OR_REPLACE_IMAGE(data.complaint_id, data.image_id),
+        endpoint: ENDPOINTS.COMPLAINTS.REPLACE_IMAGE(data.complaint_id, data.image_id),
 
-        headers: buildAuthorizationHeaders(data.access_token),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
         payload: ComplaintBuilders.buildReplaceImage({
             new_image_key: uploadResponse.data.complaint_image_keys[0],
@@ -141,20 +135,23 @@ async function replaceImageApi(data) {
  */
 async function deleteImageApi(data) {
 
+    validateRequiredFields(data, [
+        "access_token",
+        "complaint_id",
+        "image_id"
+    ])
+
     return del({
 
         endpoint:
-            ENDPOINTS.COMPLAINTS.DELETE_OR_REPLACE_IMAGE(
-
+            ENDPOINTS.COMPLAINTS.DELETE_IMAGE(
                 data.complaint_id,
-
                 data.image_id,
-
             ),
 
-        headers: buildAuthorizationHeaders(
-            data.access_token,
-        ),
+        headers: buildAuthorizationHeaders({
+            accessToken: data.access_token,
+        }),
 
     });
 

@@ -113,8 +113,10 @@ function buildUpdateComplaint(data, { newImageKeys = [], replacementImageKeys = 
 }
 
 
-function buildDeleteComplaint() {
-    return {};
+function buildDeleteComplaint(data) {
+    return {
+        deletion_reason: data.deletion_reason
+    };
 }
 
 
