@@ -4,6 +4,8 @@ export interface VolunteerApplyParams {
     access_token: string;
     motivation: string;
     occupation: string;
+    experience?: string;
+    skills?: string;
     /** Phone number in international format (e.g. `"+92..."`). */
     emergency_contact: string;
     availabilities: AvailabilitySlot[];

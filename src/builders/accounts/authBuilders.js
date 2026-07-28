@@ -59,11 +59,11 @@ function buildLoginPayload(data) {
 function buildGoogleLoginPayload(data) {
 
     validateRequiredFields(data, [
-        "id_token",
+        "credential",
     ]);
 
     return {
-        id_token: data.id_token,
+        credential: data.credential,
     };
 
 }

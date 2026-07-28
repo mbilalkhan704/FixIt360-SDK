@@ -29,6 +29,9 @@ async function run() {
 
         const applyResponse = await sdk.volunteer.apply({
             access_token,
+            motivation: "Helping nature.",
+            occupation: "Student",
+            emergency_contact: "+923021234567",
             availability: [
                 { day: "monday", start_time: "09:00", end_time: "13:00" },
                 { day: "wednesday", start_time: "14:00", end_time: "18:00" },
@@ -46,6 +49,8 @@ async function run() {
         const updateResponse = await sdk.volunteer.updateAvailability({
             access_token,
             availability: [
+                { day: "monday", start_time: "09:00", end_time: "13:00" },
+                { day: "wednesday", start_time: "14:00", end_time: "18:00" },
                 { day: "friday", start_time: "10:00", end_time: "16:00" },
             ],
         });

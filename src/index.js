@@ -77,3 +77,4 @@ class FixIt360SDK {
 
 
 export default FixIt360SDK;
+export * from "./errors/index.js";

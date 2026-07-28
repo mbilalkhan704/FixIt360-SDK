@@ -30,14 +30,14 @@ async function run() {
         console.log("Profile:", profileResponse.data);
 
         const refreshResponse = await sdk.accounts.auth.refreshToken({
-            refresh,
+            refresh_token: refresh,
         });
 
         console.log("Refreshed tokens:", refreshResponse.data);
 
         await sdk.accounts.auth.logout({
             access_token: access,
-            refresh,
+            refresh_token: refresh,
         });
 
         console.log("Logged out successfully.");

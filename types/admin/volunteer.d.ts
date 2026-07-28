@@ -78,10 +78,15 @@ export interface AdminVolunteerSummary {
     approved_by: string;
 }
 
+/** Admin DB id, or the literal `"me"` for the currently authenticated admin. */
+export type AdminIdFilter = string;
+
 export interface ListVolunteerApplicationsParams {
     access_token: string;
     /** Filter by review status. */
     status?: ReviewStatus;
+    /** Filter by reviewing admin. */
+    reviewed_by?: AdminIdFilter;
 }
 
 export interface GetVolunteerApplicationParams {
@@ -97,8 +102,16 @@ export interface ReviewVolunteerApplicationParams {
     review_reason?: string;
 }
 
+export type VolunteerActiveStatus = "active" | "inactive";
+
 export interface ListVolunteersParams {
     access_token: string;
+    /** Filter by active/inactive status. */
+    status?: VolunteerActiveStatus;
+    /** Filter by the admin who approved the volunteer. */
+    approved_by?: AdminIdFilter;
+    /** Filter by the admin who deactivated the volunteer. */
+    deactivated_by?: AdminIdFilter;
 }
 
 export interface GetVolunteerParams {
@@ -114,6 +127,10 @@ export interface DeactivateVolunteerParams {
 
 export interface ListVolunteerReactivationRequestsParams {
     access_token: string;
+    /** Filter by review status. */
+    status?: ReviewStatus;
+    /** Filter by reviewing admin. */
+    reviewed_by?: AdminIdFilter;
 }
 
 export interface GetVolunteerReactivationRequestParams {

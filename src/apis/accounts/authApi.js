@@ -60,14 +60,11 @@ async function loginApi(data) {
 
 
 /**
- * Logs in a FixIt360 user account through Google OAuth.
- *
- * Authentication:
- *     Not Required
- * 
- * @param {GoogleLoginRequest} data 
- * 
- * @returns {Promise<ApiResponse & { data: AuthenticationData }>}
+ * Logs in a FixIt360 user account through Google OAuth. Business
+ * failures (invalid credential, no matching account) come back as
+ * `{success: false, data: null}` rather than throwing.
+ * @param {GoogleLoginParams} data
+ * @returns {Promise<ApiResponse<GoogleLoginData|null>>}
  */
 async function googleLoginApi(data) {
 

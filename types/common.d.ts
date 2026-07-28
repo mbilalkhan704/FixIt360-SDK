@@ -58,3 +58,14 @@ export interface SDKConfig {
     timeout: number;
     withCredentials: boolean;
 }
+
+/** Machine-readable error code carried by every thrown SDK error (`error.code`). */
+export type ErrorCode =
+    | "API_ERROR"
+    | "SDK_NOT_INITIALIZED"
+    | "INVALID_REQUEST_DATA"
+    | "INVALID_SDK_CONFIGURATION"
+    | "NETWORK_ERROR"
+    | "REQUEST_TIMEOUT"
+    | "INVALID_RESPONSE"
+    | "SERVER_ERROR";

@@ -85,9 +85,16 @@
 // ---------------------------------------------------------------------------
 
 /**
+ * Identifies an admin for filtering purposes: either the admin's database ID
+ * (as a string) or the literal `"me"` for the currently authenticated admin.
+ * @typedef {string} AdminIdFilter
+ */
+
+/**
  * @typedef {Object} ListVolunteerApplicationsParams
  * @property {string} access_token
  * @property {ReviewStatus} [status] - Filter by review status.
+ * @property {AdminIdFilter} [reviewed_by] - Filter by reviewing admin.
  */
 
 /**
@@ -139,8 +146,16 @@
 // ---------------------------------------------------------------------------
 
 /**
+ * Active/inactive status filter for listVolunteers (distinct from {@link ReviewStatus}).
+ * @typedef {("active"|"inactive")} VolunteerActiveStatus
+ */
+
+/**
  * @typedef {Object} ListVolunteersParams
  * @property {string} access_token
+ * @property {VolunteerActiveStatus} [status] - Filter by active/inactive status.
+ * @property {AdminIdFilter} [approved_by] - Filter by the admin who approved the volunteer.
+ * @property {AdminIdFilter} [deactivated_by] - Filter by the admin who deactivated the volunteer.
  */
 
 /**
@@ -192,6 +207,8 @@
 /**
  * @typedef {Object} ListVolunteerReactivationRequestsParams
  * @property {string} access_token
+ * @property {ReviewStatus} [status] - Filter by review status.
+ * @property {AdminIdFilter} [reviewed_by] - Filter by reviewing admin.
  */
 
 /**
@@ -238,4 +255,4 @@
  * @returns {Promise<ApiResponse<null>>}
  */
 
-export {};
+export { };

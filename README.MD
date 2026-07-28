@@ -2,23 +2,25 @@
 
 This SDK is still being actively developed alongside the FixIt360 backend as part of an ongoing Final Year Project. Endpoints and payload shapes may still change, so it isn't recommended for use outside the FixIt360 ecosystem yet.
 
-A JavaScript SDK for the FixIt360 backend, a civic complaint management platform. It covers authentication, complaints, volunteer operations, admin workflows, and Cloudinary file uploads, all through a simple promise-based API.
+A JavaScript SDK for the FixIt360 backend, a civic complaint management platform. It covers authentication (including Google OAuth), complaints, volunteer operations, admin workflows, and Cloudinary file uploads, all through a simple promise-based API.
 
 ## Features
 
-Accounts handle registration, login, Google OAuth, token refresh, password reset and change, and profile management.
+Accounts handle registration, login (email/password or Google OAuth), token refresh, password reset and change, and profile management.
 
 Complaints support creating, updating, deleting, and listing, along with image management and geolocation data.
 
 Volunteers can apply, manage their availability, resign, and request reactivation.
 
-Admins can review volunteer applications, manage active volunteers, and handle reactivation requests.
+Admins can review volunteer applications, manage active volunteers, and handle reactivation requests, with filtering by status and reviewing/approving/deactivating admin.
 
 Storage uploads are handled automatically. Profile pictures and complaint images go to Cloudinary behind the scenes, with progress callbacks if you need them.
 
 Errors follow a consistent typed hierarchy (`NetworkError`, `ServerError`, `InvalidRequestDataError`, and so on) so you can handle failures predictably instead of guessing at error shapes.
 
 Every response, success or business-logic failure, resolves to the same `{ success, message, data }` shape.
+
+Full TypeScript declarations ship alongside the SDK, so you get autocomplete and type-checking in editors whether your project is JS or TS.
 
 ## Installation
 
@@ -47,7 +49,18 @@ const { data } = await sdk.accounts.auth.login({
 console.log(data.access, data.refresh);
 ```
 
-The SDK needs to be initialized with `new FixIt360SDK({...})` before making any request. Calling an API method beforehand throws `SDKNotInitializedError`.
+The SDK needs to be initialized with `new FixIt360SDK({...})` (or a later call to `sdk.initializeSDK({...})`) before making any request. Calling an API method beforehand throws `SDKNotInitializedError`.
+
+## TypeScript Support
+
+The package ships hand-written `.d.ts` declarations (see `types/`), wired up via `package.json`'s `exports` field. If your editor's TypeScript server doesn't pick them up automatically, restart it after installing.
+
+```typescript
+import FixIt360SDK, { NetworkError } from "fixit360-sdk";
+
+const sdk = new FixIt360SDK({ baseURL: "https://api.fixit360.org" });
+//    ^ fully typed, autocomplete on sdk.accounts, sdk.complaints, etc.
+```
 
 ## API Overview
 
@@ -67,9 +80,11 @@ sdk.accounts.auth.register({
   first_name,        // required
   last_name,         // required
   email,             // required
+  gender,            // required
+  date_of_birth,     // required
   password,          // required
   confirm_password,  // required
-  phone_number,      // required
+  phone_number,      // optional
 });
 
 sdk.accounts.auth.login({
@@ -78,16 +93,29 @@ sdk.accounts.auth.login({
 });
 
 sdk.accounts.auth.googleLogin({
-  id_token,   // required
+  credential,   // required, Google ID token credential
 });
+// If the matching account was previously deactivated/resigned, the response
+// carries reactivated: true instead of created, and a fresh email verification
+// code is sent. If no account exists for the Google email, this resolves with
+// success: false rather than throwing.
 
 sdk.accounts.auth.refreshToken({
   refresh_token,    // required
 });
 
 sdk.accounts.auth.logout({
+  access_token,    // required
+  refresh_token,   // required
+});
+
+sdk.accounts.auth.resendEmailOTP({
   access_token,   // required
-  refresh_token,        // required
+});
+
+sdk.accounts.auth.verifyEmail({
+  access_token,   // required
+  otp,            // required
 });
 
 sdk.accounts.password.forgotPassword({
@@ -111,9 +139,10 @@ sdk.accounts.password.confirmPassword({
 });
 
 sdk.accounts.password.changePassword({
-  verification_token,    // required
-  new_password,          // required
-  confirm_new_password,  // required
+  access_token,           // required
+  verification_token,     // required
+  new_password,           // required
+  confirm_new_password,   // required
 });
 
 sdk.accounts.profile.getProfile({
@@ -121,10 +150,14 @@ sdk.accounts.profile.getProfile({
 });
 
 sdk.accounts.profile.updateProfile({
-  access_token,   // required
-  first_name,     // required
-  phone_number,   // required
-  profile_picture,           // required
+  access_token,     // required
+  first_name,       // optional
+  last_name,        // optional
+  phone_number,     // optional
+  date_of_birth,    // optional
+  gender,           // optional
+  profile_picture,  // optional: File | Blob
+  onProgress,       // optional: upload progress callback
 });
 ```
 
@@ -144,34 +177,36 @@ sdk.complaints.create({
   latitude,
   longitude,
   address,
-  files,               // File[] (min 1, max 5) — required, uploaded and attached atomically
-  primaryFileIndex,    // optional: index into files marking the primary photo; defaults to first if omitted
+  files,   // File[], required, uploaded and attached atomically
 });
 
 sdk.complaints.update({
   access_token,
   complaint_id,
-  title,               // optional
-  description,         // optional
-  latitude,             // optional (send together with longitude)
-  longitude,            // optional (send together with latitude)
-  address,              // optional
-  keepPhotoIds,         // optional: number[] — existing photo IDs to keep unchanged
-  newFiles,              // optional: File[] — new photos to add
-  replacements,          // optional: { photo_id, file }[] — existing photos to replace with a new file
-  primaryPhotoId,        // optional: marks an existing kept/replaced photo (by photo_id) as primary
-  primaryNewFileIndex,   // optional: marks a photo from newFiles (by index) as primary
+  title,                 // optional
+  description,           // optional
+  latitude,              // optional (send together with longitude)
+  longitude,             // optional (send together with latitude)
+  address,               // optional
+  keepPhotoIds,          // optional: number[], existing photo IDs to keep unchanged
+  newFiles,               // optional: File[], new photos to add
+  replacements,           // optional: { photo_id, file }[], existing photos to replace with a new file
+  primaryPhotoId,         // optional: marks an existing (kept or replaced) photo as primary, by photo_id
+  primaryNewFileIndex,    // optional: marks a photo from newFiles as primary, by index
+  onProgress,             // optional: upload progress callback
 });
-// Note: any existing photo not referenced in keepPhotoIds or replacements is deleted server-side.
-// At least one of the text fields or an image change must be provided.
+// primaryPhotoId and primaryNewFileIndex are mutually exclusive, supplying
+// both throws InvalidRequestDataError. Any existing photo not referenced in
+// keepPhotoIds or replacements is deleted server-side.
 
-sdk.complaints.delete({ access_token, complaint_id });
+sdk.complaints.delete({ access_token, complaint_id, deletion_reason });
 
 sdk.complaints.images.add({
   access_token,
   complaint_id,
-  files,              // File[] (min 1, max 5)
+  files,              // File[], subject to the complaint's 5-photo limit
   primaryFileIndex,   // optional: index into files marking the primary photo
+  onProgress,         // optional: upload progress callback
 });
 
 sdk.complaints.images.replace({ access_token, complaint_id, image_id, file });
@@ -191,8 +226,13 @@ sdk.volunteer.getVolunteerStatus({
 // state, an active volunteer dashboard, or a reactivation flow).
 
 sdk.volunteer.apply({
-  access_token,     // required
-  availabilities,   // required
+  access_token,        // required
+  motivation,          // required
+  occupation,          // required
+  experience,          // optional
+  skills,              // optional
+  emergency_contact,   // required
+  availabilities,      // required
 });
 
 sdk.volunteer.getProfile({
@@ -203,10 +243,7 @@ sdk.volunteer.updateAvailabilities({
   access_token,     // required
   availabilities,   // required
 });
-// This is a PUT request — it replaces the full availabilities record,
-// not a partial merge. If a day's key is passed with an empty value,
-// that day is saved as no availability; it does NOT preserve whatever
-// was previously set for that day.
+// This replaces the full availabilities record, not a partial merge.
 
 sdk.volunteer.resign({
   access_token,   // required
@@ -215,7 +252,7 @@ sdk.volunteer.resign({
 
 sdk.volunteer.requestReactivation({
   access_token,   // required
-  reason,         // required
+  reason,         // optional
 });
 ```
 
@@ -224,8 +261,8 @@ sdk.volunteer.requestReactivation({
 ```javascript
 sdk.admin.volunteer.listVolunteerApplications({
   access_token,   // required
-  status,         // optional
-  reviewed_by,    // optional
+  status,         // optional: "pending" | "approved" | "rejected"
+  reviewed_by,    // optional: admin ID, or "me" for the currently authenticated admin
 });
 
 sdk.admin.volunteer.getVolunteerApplication({
@@ -236,14 +273,15 @@ sdk.admin.volunteer.getVolunteerApplication({
 sdk.admin.volunteer.reviewVolunteerApplication({
   access_token,     // required
   application_id,   // required
-  status,           // required
+  status,           // required: "approved" | "rejected"
+  review_reason,    // optional when approving, required when rejecting
 });
 
 sdk.admin.volunteer.listVolunteers({
   access_token,     // required
-  status,           // optional
-  approved_by,      // optional
-  deactivated_by,   // optional
+  status,           // optional: "active" | "inactive"
+  approved_by,      // optional: admin ID, or "me"
+  deactivated_by,   // optional: admin ID, or "me"
 });
 
 sdk.admin.volunteer.getVolunteer({
@@ -259,8 +297,8 @@ sdk.admin.volunteer.deactivateVolunteer({
 
 sdk.admin.volunteer.listVolunteerReactivationRequests({
   access_token,   // required
-  status,         // optional
-  reviewed_by,    // optional
+  status,         // optional: "pending" | "approved" | "rejected"
+  reviewed_by,    // optional: admin ID, or "me"
 });
 
 sdk.admin.volunteer.getVolunteerReactivationRequest({
@@ -271,19 +309,43 @@ sdk.admin.volunteer.getVolunteerReactivationRequest({
 sdk.admin.volunteer.reviewVolunteerReactivationRequest({
   access_token,   // required
   request_id,     // required
-  status,         // required
+  status,         // required: "approved" | "rejected"
+  review_reason,  // optional when approving, required when rejecting
 });
 ```
 
+All list filters above are optional; an empty `results` array in the response means no matches, not an error.
+
 ## File Uploads and Progress Tracking
 
-Any method that takes a `file` or `files` argument also accepts an optional `onProgress` callback:
+Any method that takes a `file`/`files` or `profile_picture` argument also accepts an optional `onProgress` callback. The payload shape differs slightly depending on whether one file or several are uploading:
 
 ```javascript
+// Single file (profile picture)
 await sdk.accounts.profile.updateProfile({
     access_token,
-    file: profilePictureFile,
-    onProgress: (percent) => console.log(`Uploading: ${percent}%`),
+    profile_picture: file,
+    onProgress: ({ progress, loadedBytes, totalBytes }) => {
+        console.log(`${progress}% (${loadedBytes}/${totalBytes} bytes)`);
+    },
+});
+
+// Multiple files (complaint photos)
+await sdk.complaints.create({
+    // ...
+    files: [file1, file2, file3],
+    onProgress: ({
+        progress,                // overall percent across all files
+        currentFile,             // 1-based index of the file currently uploading
+        totalFiles,
+        loadedBytes,             // total bytes uploaded so far, across all files
+        totalBytes,
+        currentFileProgress,     // percent complete for the current file
+        currentFileLoadedBytes,
+        currentFileTotalBytes,
+    }) => {
+        console.log(`File ${currentFile}/${totalFiles}, overall ${progress}%`);
+    },
 });
 ```
 
@@ -301,37 +363,52 @@ A successful call resolves to:
 }
 ```
 
-Backend business errors (4xx responses) come back in the same shape with `success: false` instead of throwing. The SDK only throws for things outside normal request/response handling: network failures, timeouts, malformed responses, and 5xx server errors.
+Backend business errors (4xx responses) come back in the same shape with `success: false` instead of throwing. The SDK only throws for things outside normal request/response handling: SDK misuse, invalid input, network failures, timeouts, malformed responses, and 5xx server errors.
 
 ## Error Handling
 
-Every thrown error extends a common `ApiError` base class and carries a `code` you can branch on:
+Every thrown error extends a common `ApiError` base class and is importable directly from the package for `instanceof` checks, alongside its machine-readable `code`:
+
+```javascript
+import FixIt360SDK, {
+    ApiError,
+    NetworkError,
+    ServerError,
+    InvalidRequestDataError,
+} from "fixit360-sdk";
+
+try {
+    await sdk.accounts.auth.login({ email, password });
+} catch (error) {
+    if (error instanceof NetworkError) {
+        // handle connectivity issues specifically
+    } else if (error instanceof ApiError) {
+        console.error(`[${error.code}] ${error.message}`);
+    } else {
+        throw error; // not an SDK error
+    }
+}
+```
 
 | Error | Code | Thrown when |
 |---|---|---|
-| `SDKNotInitializedError` | `SDK_NOT_INITIALIZED` | An API call is made before `new FixIt360SDK(...)` |
-| `InvalidRequestDataError` | `INVALID_REQUEST_DATA` | Request data is missing required fields, or is otherwise invalid (e.g. no fields provided to update, or an unsupported combination of arguments) |
+| `SDKNotInitializedError` | `SDK_NOT_INITIALIZED` | An API call is made before the SDK is initialized |
+| `InvalidRequestDataError` | `INVALID_REQUEST_DATA` | Request data is missing required fields, or is otherwise invalid (e.g. no fields provided to update, an unsupported combination of arguments like `primaryPhotoId` + `primaryNewFileIndex`, or a malformed file/date) |
+| `InvalidSDKConfigurationError` | `INVALID_SDK_CONFIGURATION` | `initializeSDK()` is called with an invalid `baseURL`, `timeout`, or `withCredentials` |
 | `NetworkError` | `NETWORK_ERROR` | The request couldn't reach the server |
 | `RequestTimeoutError` | `REQUEST_TIMEOUT` | The request exceeded the configured timeout |
 | `InvalidResponseError` | `INVALID_RESPONSE` | The server or Cloudinary returned an unexpected shape |
 | `ServerError` | `SERVER_ERROR` | The backend returned a 5xx response |
 
-> **Note:** `IncompleteRequestDataError` has been renamed to `InvalidRequestDataError` (code changed from `INCOMPLETE_REQUEST_DATA` to `INVALID_REQUEST_DATA`). It now also covers cases beyond missing fields — e.g. `atLeastOneRequired()` for "nothing to update" and `unsupportedOperation()` for invalid argument combinations — not just literally-missing required fields.
+> **Note:** `InvalidRequestDataError` has been updated. It now also covers cases beyond missing fields, e.g. `InvalidRequestDataError.atLeastOneRequired()` for "nothing to update" and `InvalidRequestDataError.unsupportedOperation()` for invalid argument combinations, not just literally-missing required fields.
 
-```javascript
-try {
-    await sdk.accounts.auth.login({ email, password });
-} catch (error) {
-    console.error(`[${error.code}] ${error.message}`);
-}
-```
+Every error instance also has a `toJSON()` method, useful for logging or sending to an error-tracking service without losing structure.
 
 ## Examples
 
 Working examples live in [`examples/`](./examples):
 
 - [`loginExample.js`](./examples/loginExample.js): authentication, profile fetch, token refresh, logout
-- [`complaintExample.js`](./examples/complaintExample.js): creating a complaint with images, listing, updating
 - [`volunteerExample.js`](./examples/volunteerExample.js): applying, checking status, updating availability
 
 ## Project Structure
@@ -347,7 +424,8 @@ FixIt360-SDK/
 │   ├── internal/               # Internal-only helpers (Cloudinary upload pipeline)
 │   ├── errors/                 # Typed SDK error classes
 │   ├── utils/                  # Date, object, and validation utilities
-│   └── types/                  # Shared JSDoc typedefs
+│   └── typedefs/                # Shared JSDoc typedefs (source of truth for types/*.d.ts)
+├── types/                      # Hand-written .d.ts declarations for TypeScript consumers
 ├── examples/                   # Runnable usage examples
 ├── LICENSE
 ├── package.json
@@ -364,4 +442,4 @@ See [LICENSE](./LICENSE).
 
 ## Contributing
 
-This SDK is under active development alongside the [FixIt360 backend](https://github.com/mbilalkhan704/project-fixit360) as part of an ongoing Final Year Project. Expect breaking changes before a stable v1. Issues and pull requests are welcome.
+This SDK is under active development alongside the [FixIt360 backend](https://github.com/mbilalkhan704/FixIt360-backend) as part of an ongoing Final Year Project. Expect breaking changes before a stable v1. Issues and pull requests are welcome.

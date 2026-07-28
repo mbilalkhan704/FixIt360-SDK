@@ -159,6 +159,12 @@ async function updateComplaintApi(data) {
     const hasNew = Array.isArray(data.newFiles) && data.newFiles.length > 0;
     const hasReplacements = Array.isArray(data.replacements) && data.replacements.length > 0;
 
+    if (data.primaryPhotoId !== undefined && data.primaryNewFileIndex !== undefined) {
+        throw new InvalidRequestDataError(
+            "primaryPhotoId and primaryNewFileIndex cannot coexist."
+        )
+    }
+
     if (data.primaryNewFileIndex !== undefined) {
         validatePrimaryIndex(
             Array.isArray(data.newFiles) ? data.newFiles : [],

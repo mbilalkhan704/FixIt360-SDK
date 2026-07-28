@@ -85,7 +85,13 @@ export interface UpdateComplaintParams {
     newFiles?: Blob[];
     /** Existing photos to replace in place. */
     replacements?: ComplaintPhotoReplacement[];
-    /** Index into `newFiles` to mark as the primary photo. */
+    /**
+     * ID of an existing (kept or replaced) photo to mark as primary. Mutually
+     * exclusive with `primaryNewFileIndex` — supplying both throws
+     * `InvalidRequestDataError` at runtime.
+     */
+    primaryPhotoId?: number;
+    /** Index into `newFiles` to mark as the primary photo. Mutually exclusive with `primaryPhotoId`. */
     primaryNewFileIndex?: number;
     onProgress?: OnUploadProgress;
 }

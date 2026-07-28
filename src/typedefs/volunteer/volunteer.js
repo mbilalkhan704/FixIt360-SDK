@@ -17,6 +17,8 @@
  * @property {string} access_token
  * @property {string} motivation
  * @property {string} occupation
+ * @property {string} [experience]
+ * @property {string} [skills]
  * @property {string} emergency_contact - Phone number in international format (e.g. `"+92..."`).
  * @property {AvailabilitySlot[]} availabilities
  */
@@ -144,4 +146,4 @@
  * @returns {Promise<ApiResponse<null>>}
  */
 
-export {};
+export { };

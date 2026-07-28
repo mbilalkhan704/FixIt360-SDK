@@ -119,8 +119,12 @@
  * @property {number} [longitude]
  * @property {number[]} [keepPhotoIds] - IDs of existing photos to retain unchanged.
  * @property {Blob[]} [newFiles] - New photos to add.
- * @property {ComplaintPhotoReplacement[]} [replacements] - Existing photos to replace in place.
- * @property {number} [primaryNewFileIndex] - Index into `newFiles` to mark as the primary photo.
+* @property {ComplaintPhotoReplacement[]} [replacements] - Existing photos to replace in place.
+ * @property {number} [primaryPhotoId] - ID of an existing (kept or replaced) photo to mark
+ *   as primary. Mutually exclusive with `primaryNewFileIndex` — supplying both throws
+ *   `InvalidRequestDataError`.
+ * @property {number} [primaryNewFileIndex] - Index into `newFiles` to mark as the primary
+ *   photo. Mutually exclusive with `primaryPhotoId`.
  * @property {OnUploadProgress} [onProgress]
  */
 
@@ -192,4 +196,4 @@
  * @returns {Promise<ApiResponse<PaginatedResult<ComplaintSummary>>>}
  */
 
-export {};
+export { };

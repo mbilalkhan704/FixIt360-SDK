@@ -42,11 +42,32 @@ export interface RegisterParams {
     date_of_birth: string;
     password: string;
     confirm_password: string;
+    /** Optional, international format (e.g. `"+92..."`). */
+    phone_number?: string;
 }
 
 export interface RegisterUser {
     email: string;
     email_verified: boolean;
+}
+
+export interface GoogleLoginParams {
+    /** Google ID token credential. */
+    credential: string;
+}
+
+export interface GoogleLoginData {
+    access: string;
+    refresh: string;
+    /** Present on a normal login; `true` if this was the user's first Google sign-in. */
+    created?: boolean;
+    /**
+     * Present instead of `created` when a previously deactivated/resigned account
+     * was reactivated via Google login. A verification code is also sent to the
+     * user's email in this case.
+     */
+    reactivated?: boolean;
+    user: AuthUser;
 }
 
 export interface RegisterData {
@@ -82,6 +103,12 @@ export interface AuthApi {
 
     /** Verify a user's email address using the OTP sent by register/resendEmailOTP. */
     verifyEmail(params: VerifyEmailParams): Promise<ApiResponse<null>>;
+
+    /**
+     * Authenticate (or auto-register) a user via a Google ID token. Business
+     * failures come back as `{success: false, data: null}` rather than throwing.
+     */
+    googleLogin(params: GoogleLoginParams): Promise<ApiResponse<GoogleLoginData | null>>;
 }
 
 declare const AuthApi: AuthApi;

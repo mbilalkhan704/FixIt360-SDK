@@ -91,6 +91,7 @@
  * @property {string} date_of_birth - Format `"YYYY/MM/DD"`.
  * @property {string} password
  * @property {string} confirm_password
+ * @property {string} [phone_number] - Optional, international format (e.g. `"+92..."`).
  */
 
 /**
@@ -146,4 +147,35 @@
  * @returns {Promise<ApiResponse<null>>}
  */
 
-export {};
+// ---------------------------------------------------------------------------
+// googleLogin
+// ---------------------------------------------------------------------------
+
+/**
+ * @typedef {Object} GoogleLoginParams
+ * @property {string} credential - Google ID token credential.
+ */
+
+/**
+ * @typedef {Object} GoogleLoginData
+ * @property {string} access - JWT access token.
+ * @property {string} refresh - JWT refresh token.
+ * @property {boolean} [created] - Present on a normal login; `true` if this was the
+ *   user's first Google sign-in.
+ * @property {boolean} [reactivated] - Present instead of `created` when a previously
+ *   deactivated/resigned account was reactivated via Google login. When `true`, a
+ *   verification code has also been sent to the user's email.
+ * @property {AuthUser} user
+ */
+
+/**
+ * Authenticate (or auto-register) a user via a Google ID token.
+ *
+ * Business failures — missing/invalid credential, or no account matching the
+ * Google email — come back as `{success: false, data: null}` rather than throwing.
+ * @function
+ * @param {GoogleLoginParams} params
+ * @returns {Promise<ApiResponse<GoogleLoginData|null>>}
+ */
+
+export { };
