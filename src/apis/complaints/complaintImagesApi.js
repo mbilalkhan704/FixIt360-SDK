@@ -10,12 +10,15 @@
 
 
 /**
- * @import {ApiResponse} from "../../types/typedefs.js"
- * @import {
- *      AddComplaintImagesRequest,
- *      ReplaceComplaintImageRequest,
- *      DeleteComplaintImageRequest
- * } from "../../types/typedefs.js"
+ * @typedef {import('../../typedefs/common.js').ApiResponse} ApiResponse
+ * @typedef {import('../../typedefs/common.js').ValidationErrors} ValidationErrors
+ * @typedef {import('../../typedefs/common.js').OnUploadProgress} OnUploadProgress
+ * @typedef {import('../../typedefs/complaints/complaintImages.js').AddComplaintImagesParams} AddComplaintImagesParams
+ * @typedef {import('../../typedefs/complaints/complaintImages.js').AddComplaintImagesData} AddComplaintImagesData
+ * @typedef {import('../../typedefs/complaints/complaintImages.js').DeleteComplaintImageParams} DeleteComplaintImageParams
+ * @typedef {import('../../typedefs/complaints/complaintImages.js').DeleteComplaintImageData} DeleteComplaintImageData
+ * @typedef {import('../../typedefs/complaints/complaintImages.js').ReplaceComplaintImageParams} ReplaceComplaintImageParams
+ * @typedef {import('../../typedefs/complaints/complaintImages.js').ReplaceComplaintImageData} ReplaceComplaintImageData
  */
 
 
@@ -29,14 +32,10 @@ import { MIN_COMPLAINT_PHOTOS, MAX_COMPLAINT_PHOTOS } from "../../config/constan
 
 
 /**
- * Adds images to a complaint.
- *
- * Authentication:
- *     Required
- *
- * @param {AddComplaintImagesRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Add one or more photos to an existing complaint. Fails if the complaint's
+ * 5-photo limit would be exceeded.
+ * @param {AddComplaintImagesParams} params
+ * @returns {Promise<ApiResponse<AddComplaintImagesData>|ApiResponse<ValidationErrors>>}
  */
 async function addImagesApi(data) {
 
@@ -80,14 +79,9 @@ async function addImagesApi(data) {
 
 
 /**
- * Replaces a complaint image.
- *
- * Authentication:
- *     Required
- *
- * @param {ReplaceComplaintImageRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Replace an existing complaint photo in place with a new file.
+ * @param {ReplaceComplaintImageParams} params
+ * @returns {Promise<ApiResponse<ReplaceComplaintImageData>>}
  */
 async function replaceImageApi(data) {
 
@@ -122,14 +116,9 @@ async function replaceImageApi(data) {
 
 
 /**
- * Deletes a complaint image.
- *
- * Authentication:
- *     Required
- *
- * @param {DeleteComplaintImageRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Delete a single photo from a complaint.
+ * @param {DeleteComplaintImageParams} params
+ * @returns {Promise<ApiResponse<DeleteComplaintImageData>>}
  */
 async function deleteImageApi(data) {
 

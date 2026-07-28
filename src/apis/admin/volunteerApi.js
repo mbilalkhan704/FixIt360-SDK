@@ -10,18 +10,21 @@
 
 
 /**
- * @import {ApiResponse} from "../../types/typedefs.js"
- * @import {
- *      ListApplicationsRequest,
- *      GetApplicationRequest,
- *      ReviewApplicationRequest,
- *      ListVolunteersRequest,
- *      GetVolunteerRequest,
- *      DeactivateVolunteerRequest,
- *      ListReactivationRequestsRequest,
- *      GetReactivationRequestRequest,
- *      ReviewReactivationRequest
- * } from "../../types/typedefs.js"
+ * @typedef {import('../../typedefs/common.js').ApiResponse} ApiResponse
+ * @typedef {import('../../typedefs/common.js').PaginatedResult} PaginatedResult
+ * @typedef {import('../../typedefs/admin/volunteer.js').VolunteerApplication} VolunteerApplication
+ * @typedef {import('../../typedefs/admin/volunteer.js').VolunteerReactivationRequest} VolunteerReactivationRequest
+ * @typedef {import('../../typedefs/admin/volunteer.js').AdminVolunteer} AdminVolunteer
+ * @typedef {import('../../typedefs/admin/volunteer.js').AdminVolunteerSummary} AdminVolunteerSummary
+ * @typedef {import('../../typedefs/admin/volunteer.js').ListVolunteerApplicationsParams} ListVolunteerApplicationsParams
+ * @typedef {import('../../typedefs/admin/volunteer.js').GetVolunteerApplicationParams} GetVolunteerApplicationParams
+ * @typedef {import('../../typedefs/admin/volunteer.js').ReviewVolunteerApplicationParams} ReviewVolunteerApplicationParams
+ * @typedef {import('../../typedefs/admin/volunteer.js').ListVolunteersParams} ListVolunteersParams
+ * @typedef {import('../../typedefs/admin/volunteer.js').GetVolunteerParams} GetVolunteerParams
+ * @typedef {import('../../typedefs/admin/volunteer.js').DeactivateVolunteerParams} DeactivateVolunteerParams
+ * @typedef {import('../../typedefs/admin/volunteer.js').ListVolunteerReactivationRequestsParams} ListVolunteerReactivationRequestsParams
+ * @typedef {import('../../typedefs/admin/volunteer.js').GetVolunteerReactivationRequestParams} GetVolunteerReactivationRequestParams
+ * @typedef {import('../../typedefs/admin/volunteer.js').ReviewVolunteerReactivationRequestParams} ReviewVolunteerReactivationRequestParams
  */
 
 
@@ -34,14 +37,9 @@ import { validateRequiredFields } from "../../utils/validators.js";
 
 
 /**
- * Retrieves volunteer applications.
- *
- * Authentication:
- *     Required (Admin)
- *
- * @param {ListApplicationsRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * List volunteer applications, optionally filtered by status.
+ * @param {ListVolunteerApplicationsParams} params
+ * @returns {Promise<ApiResponse<PaginatedResult<VolunteerApplication>>>}
  */
 async function listApplicationsApi(data) {
 
@@ -60,14 +58,9 @@ async function listApplicationsApi(data) {
 
 
 /**
- * Retrieves a volunteer application.
- *
- * Authentication:
- *     Required (Admin)
- *
- * @param {GetApplicationRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Retrieve a single volunteer application by ID.
+ * @param {GetVolunteerApplicationParams} params
+ * @returns {Promise<ApiResponse<VolunteerApplication>>}
  */
 async function getApplicationApi(data) {
 
@@ -89,14 +82,9 @@ async function getApplicationApi(data) {
 
 
 /**
- * Reviews a volunteer application.
- *
- * Authentication:
- *     Required (Admin)
- *
- * @param {ReviewApplicationRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Approve or reject a pending volunteer application.
+ * @param {ReviewVolunteerApplicationParams} params
+ * @returns {Promise<ApiResponse<null>>}
  */
 async function reviewApplicationApi(data) {
 
@@ -120,14 +108,9 @@ async function reviewApplicationApi(data) {
 
 
 /**
- * Retrieves volunteers.
- *
- * Authentication:
- *     Required (Admin)
- *
- * @param {ListVolunteersRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * List all volunteers (active and inactive).
+ * @param {ListVolunteersParams} params
+ * @returns {Promise<ApiResponse<PaginatedResult<AdminVolunteerSummary>>>}
  */
 async function listVolunteersApi(data) {
 
@@ -147,14 +130,9 @@ async function listVolunteersApi(data) {
 
 
 /**
- * Retrieves a volunteer.
- *
- * Authentication:
- *     Required (Admin)
- *
- * @param {GetVolunteerRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Retrieve full detail for a single volunteer.
+ * @param {GetVolunteerParams} params
+ * @returns {Promise<ApiResponse<AdminVolunteer>>}
  */
 async function getVolunteerApi(data) {
 
@@ -175,14 +153,9 @@ async function getVolunteerApi(data) {
 
 
 /**
- * Deactivates a volunteer.
- *
- * Authentication:
- *     Required (Admin)
- *
- * @param {DeactivateVolunteerRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Deactivate an active volunteer (admin-initiated).
+ * @param {DeactivateVolunteerParams} params
+ * @returns {Promise<ApiResponse<null>>}
  */
 async function deactivateVolunteerApi(data) {
 
@@ -205,14 +178,9 @@ async function deactivateVolunteerApi(data) {
 
 
 /**
- * Retrieves volunteer reactivation requests.
- *
- * Authentication:
- *     Required (Admin)
- *
- * @param {ListReactivationRequestsRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * List volunteer reactivation requests.
+ * @param {ListVolunteerReactivationRequestsParams} params
+ * @returns {Promise<ApiResponse<PaginatedResult<VolunteerReactivationRequest>>>}
  */
 async function listReactivationRequestsApi(data) {
 
@@ -231,14 +199,9 @@ async function listReactivationRequestsApi(data) {
 
 
 /**
- * Retrieves a volunteer reactivation request.
- *
- * Authentication:
- *     Required (Admin)
- *
- * @param {GetReactivationRequestRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Retrieve a single volunteer reactivation request by ID.
+ * @param {GetVolunteerReactivationRequestParams} params
+ * @returns {Promise<ApiResponse<VolunteerReactivationRequest>>}
  */
 async function getReactivationRequestApi(data) {
 
@@ -259,14 +222,9 @@ async function getReactivationRequestApi(data) {
 
 
 /**
- * Reviews a volunteer reactivation request.
- *
- * Authentication:
- *     Required (Admin)
- *
- * @param {ReviewReactivationRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Approve or reject a pending volunteer reactivation request.
+ * @param {ReviewVolunteerReactivationRequestParams} params
+ * @returns {Promise<ApiResponse<null>>}
  */
 async function reviewReactivationRequestApi(data) {
 

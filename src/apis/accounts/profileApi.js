@@ -10,12 +10,10 @@
 
 
 /**
- * @import {ApiResponse} from "../../types/typedefs.js"
- * @import {
- *      GetProfileRequest,
- *      UpdateProfileRequest,
- *      ProfileData
- * } from "../../types/typedefs.js"
+ * @typedef {import('../../typedefs/common.js').ApiResponse} ApiResponse
+ * @typedef {import('../../typedefs/accounts/profile.js').GetProfileParams} GetProfileParams
+ * @typedef {import('../../typedefs/accounts/profile.js').UserProfile} UserProfile
+ * @typedef {import('../../typedefs/accounts/profile.js').UpdateProfileParams} UpdateProfileParams
  */
 
 
@@ -27,14 +25,9 @@ import ProfileBuilders from "../../builders/accounts/profileBuilders.js";
 
 
 /**
- * Retrieves the authenticated user's profile.
- *
- * Authentication:
- *     Required
- *
- * @param {GetProfileRequest} data
- *
- * @returns {Promise<ApiResponse & { data: ProfileData }>}
+ * Retrieve the authenticated user's profile.
+ * @param {GetProfileParams} params
+ * @returns {Promise<ApiResponse<UserProfile>>}
  */
 async function getProfileApi(data) {
 
@@ -49,15 +42,10 @@ async function getProfileApi(data) {
 
 
 /**
- * Updates the authenticated user's profile.
- * If profile_picture is provided, the SDK handles the upload.
- *
- * Authentication:
- *     Required
- *
- * @param {UpdateProfileRequest} data
- *
- * @returns {Promise<ApiResponse & { data: ProfileData }>}
+ * Update one or more fields of the authenticated user's profile.
+ * Only the fields provided are changed.
+ * @param {UpdateProfileParams} params
+ * @returns {Promise<ApiResponse<UserProfile>>}
  */
 async function updateProfileApi(data) {
 

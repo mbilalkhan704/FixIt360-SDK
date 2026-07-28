@@ -10,15 +10,16 @@
 
 
 /**
- * @import {ApiResponse} from "../../types/typedefs.js"
- * @import {
- *      ForgotPasswordRequest,
- *      VerifyPasswordResetOTPRequest,
- *      PasswordResetTokenData,
- *      ResetPasswordRequest,
- *      ConfirmPasswordRequest,
- *      ChangePasswordRequest,
- * } from "../../types/typedefs.js"
+ * @typedef {import('../../typedefs/common.js').ApiResponse} ApiResponse
+ * @typedef {import('../../typedefs/accounts/password.js').ChangePasswordParams} ChangePasswordParams
+ * @typedef {import('../../typedefs/accounts/password.js').ChangePasswordData} ChangePasswordData
+ * @typedef {import('../../typedefs/accounts/password.js').ConfirmPasswordParams} ConfirmPasswordParams
+ * @typedef {import('../../typedefs/accounts/password.js').ConfirmPasswordData} ConfirmPasswordData
+ * @typedef {import('../../typedefs/accounts/password.js').ForgotPasswordParams} ForgotPasswordParams
+ * @typedef {import('../../typedefs/accounts/password.js').VerifyPasswordResetOTPParams} VerifyPasswordResetOTPParams
+ * @typedef {import('../../typedefs/accounts/password.js').VerifyPasswordResetOTPData} VerifyPasswordResetOTPData
+ * @typedef {import('../../typedefs/accounts/password.js').ResetPasswordParams} ResetPasswordParams
+ * @typedef {import('../../typedefs/accounts/password.js').ResetPasswordFieldErrors} ResetPasswordFieldErrors
  */
 
 
@@ -29,14 +30,10 @@ import PasswordBuilders from "../../builders/accounts/passwordBuilders.js";
 
 
 /**
- * Sends a password reset OTP to the user's email address.
- *
- * Authentication:
- *     Not Required
- *
- * @param {ForgotPasswordRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Request a password reset OTP via email. Response is intentionally
+ * non-revealing about whether the account exists.
+ * @param {ForgotPasswordParams} params
+ * @returns {Promise<ApiResponse<null>>}
  */
 async function forgotPasswordApi(data) {
 
@@ -49,14 +46,9 @@ async function forgotPasswordApi(data) {
 
 
 /**
- * Verifies the password reset OTP.
- *
- * Authentication:
- *     Not Required
- *
- * @param {VerifyPasswordResetOTPRequest} data
- *
- * @returns {Promise<ApiResponse & { data: PasswordResetTokenData }>}
+ * Verify the OTP sent by forgotPassword.
+ * @param {VerifyPasswordResetOTPParams} params
+ * @returns {Promise<ApiResponse<VerifyPasswordResetOTPData>>}
  */
 async function verifyPasswordResetOTPApi(data) {
 
@@ -69,14 +61,9 @@ async function verifyPasswordResetOTPApi(data) {
 
 
 /**
- * Resets the user's password using a verified password reset token.
- *
- * Authentication:
- *     Not Required
- *
- * @param {ResetPasswordRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Reset a user's password using a verified reset token.
+ * @param {ResetPasswordParams} params
+ * @returns {Promise<ApiResponse<null>|ApiResponse<ResetPasswordFieldErrors>>}
  */
 async function resetPasswordApi(data) {
 
@@ -89,15 +76,9 @@ async function resetPasswordApi(data) {
 
 
 /**
- * Confirms the authenticated user's password before performing
- * sensitive account operations.
- *
- * Authentication:
- *     Required
- *
- * @param {ConfirmPasswordRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Re-confirm the authenticated user's current password before a sensitive action.
+ * @param {ConfirmPasswordParams} params
+ * @returns {Promise<ApiResponse<ConfirmPasswordData>>}
  */
 async function confirmPasswordApi(data) {
 
@@ -113,14 +94,9 @@ async function confirmPasswordApi(data) {
 
 
 /**
- * Changes the authenticated user's password.
- *
- * Authentication:
- *     Required
- *
- * @param {ChangePasswordRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Change the authenticated user's password.
+ * @param {ChangePasswordParams} params
+ * @returns {Promise<ApiResponse<ChangePasswordData>>}
  */
 async function changePasswordApi(data) {
 

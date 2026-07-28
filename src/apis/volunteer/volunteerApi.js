@@ -10,16 +10,16 @@
 
 
 /**
- * @import {ApiResponse} from "../../types/typedefs.js"
- * @import {
- *      AvailabilitySlot,
- *      GetVolunteerStatusRequest,
- *      ApplyVolunteerRequest,
- *      GetVolunteerProfileRequest,
- *      UpdateAvailabilityRequest,
- *      VolunteerResignationRequest,
- *      VolunteerReactivationRequest
- * } from "../../types/typedefs.js"
+ * @typedef {import('../../typedefs/common.js').ApiResponse} ApiResponse
+ * @typedef {import('../../typedefs/common.js').ValidationErrors} ValidationErrors
+ * @typedef {import('../../typedefs/volunteer/volunteer.js').VolunteerApplyParams} VolunteerApplyParams
+ * @typedef {import('../../typedefs/volunteer/volunteer.js').GetVolunteerProfileParams} GetVolunteerProfileParams
+ * @typedef {import('../../typedefs/volunteer/volunteer.js').VolunteerProfile} VolunteerProfile
+ * @typedef {import('../../typedefs/volunteer/volunteer.js').GetVolunteerStatusParams} GetVolunteerStatusParams
+ * @typedef {import('../../typedefs/volunteer/volunteer.js').VolunteerStatusData} VolunteerStatusData
+ * @typedef {import('../../typedefs/volunteer/volunteer.js').UpdateAvailabilitiesParams} UpdateAvailabilitiesParams
+ * @typedef {import('../../typedefs/volunteer/volunteer.js').VolunteerResignParams} VolunteerResignParams
+ * @typedef {import('../../typedefs/volunteer/volunteer.js').RequestReactivationParams} RequestReactivationParams
  */
 
 
@@ -30,14 +30,10 @@ import VolunteerBuilders from "../../builders/volunteer/volunteerBuilders.js";
 
 
 /**
- * Retrieves the current volunteer status.
- *
- * Authentication:
- *     Required
- *
- * @param {GetVolunteerStatusRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Retrieve the authenticated user's current volunteer status
+ * (never registered / applied and pending / active / inactive).
+ * @param {GetVolunteerStatusParams} params
+ * @returns {Promise<ApiResponse<VolunteerStatusData>>}
  */
 async function getVolunteerStatusApi(data) {
 
@@ -52,14 +48,9 @@ async function getVolunteerStatusApi(data) {
 
 
 /**
- * Submits a volunteer application.
- *
- * Authentication:
- *     Required
- *
- * @param {ApplyVolunteerRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Submit a volunteer application for the authenticated user.
+ * @param {VolunteerApplyParams} params
+ * @returns {Promise<ApiResponse<null>|ApiResponse<ValidationErrors>>}
  */
 async function applyApi(data) {
 
@@ -75,14 +66,9 @@ async function applyApi(data) {
 
 
 /**
- * Updates volunteer availability.
- *
- * Authentication:
- *     Required
- *
- * @param {UpdateAvailabilityRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Replace the authenticated volunteer's availability slots.
+ * @param {UpdateAvailabilitiesParams} params
+ * @returns {Promise<ApiResponse<null>|ApiResponse<ValidationErrors>>}
  */
 async function updateAvailabilitiesApi(data) {
 
@@ -98,14 +84,10 @@ async function updateAvailabilitiesApi(data) {
 
 
 /**
- * Retrieves the authenticated volunteer profile.
- *
- * Authentication:
- *     Required
- *
- * @param {GetVolunteerProfileRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Retrieve the authenticated user's volunteer profile. Fails if the user
+ * is not registered as a volunteer.
+ * @param {GetVolunteerProfileParams} params
+ * @returns {Promise<ApiResponse<VolunteerProfile|null>>}
  */
 async function getProfileApi(data) {
 
@@ -120,14 +102,9 @@ async function getProfileApi(data) {
 
 
 /**
- * Resigns as a volunteer.
- *
- * Authentication:
- *     Required
- *
- * @param {VolunteerResignationRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Voluntarily resign from the volunteer program.
+ * @param {VolunteerResignParams} params
+ * @returns {Promise<ApiResponse<null>>}
  */
 async function resignApi(data) {
 
@@ -143,14 +120,10 @@ async function resignApi(data) {
 
 
 /**
- * Requests volunteer reactivation.
- *
- * Authentication:
- *     Required
- *
- * @param {VolunteerReactivationRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Request reactivation of a resigned/deactivated volunteer account.
+ * Subject to review and (for admin-deactivated accounts) a cooldown period.
+ * @param {RequestReactivationParams} params
+ * @returns {Promise<ApiResponse<null>>}
  */
 async function requestReactivationApi(data) {
 

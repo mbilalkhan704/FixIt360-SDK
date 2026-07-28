@@ -10,19 +10,16 @@
 
 
 /**
- * @import {
- *      ApiResponse,
-*       AuthenticationData
-* } from "../../types/typedefs.js"
- * @import {
- *      RegisterRequest,
- *      LoginRequest,
- *      GoogleLoginRequest,
- *      RefreshTokenRequest,
- *      LogoutRequest,
- *      VerifyEmailRequest,
- *      ResendEmailOTPRequest
- * } from "../../types/typedefs.js"
+ * @typedef {import('../../typedefs/common.js').ApiResponse} ApiResponse
+ * @typedef {import('../../typedefs/accounts/auth.js').LoginParams} LoginParams
+ * @typedef {import('../../typedefs/accounts/auth.js').LoginData} LoginData
+ * @typedef {import('../../typedefs/accounts/auth.js').LogoutParams} LogoutParams
+ * @typedef {import('../../typedefs/accounts/auth.js').RefreshTokenParams} RefreshTokenParams
+ * @typedef {import('../../typedefs/accounts/auth.js').RefreshTokenData} RefreshTokenData
+ * @typedef {import('../../typedefs/accounts/auth.js').RegisterParams} RegisterParams
+ * @typedef {import('../../typedefs/accounts/auth.js').RegisterData} RegisterData
+ * @typedef {import('../../typedefs/accounts/auth.js').ResendEmailOTPParams} ResendEmailOTPParams
+ * @typedef {import('../../typedefs/accounts/auth.js').VerifyEmailParams} VerifyEmailParams
  */
 
 
@@ -33,14 +30,9 @@ import AuthBuilders from "../../builders/accounts/authBuilders.js";
 
 
 /**
- * Registers a new FixIt360 user account.
- *
- * Authentication:
- *     Not Required
- *
- * @param {RegisterRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Create a new account. Sends an email verification OTP on success.
+ * @param {RegisterParams} params
+ * @returns {Promise<ApiResponse<RegisterData>>}
  */
 async function registerApi(data) {
 
@@ -53,14 +45,9 @@ async function registerApi(data) {
 
 
 /**
- * Logs in a FixIt360 user account.
- *
- * Authentication:
- *     Not Required
- * 
- * @param {LoginRequest} data
- * 
- * @returns {Promise<ApiResponse & { data: AuthenticationData }>}
+ * Authenticate a user with email and password.
+ * @param {LoginParams} params
+ * @returns {Promise<ApiResponse<LoginData>>}
  */
 async function loginApi(data) {
 
@@ -93,14 +80,9 @@ async function googleLoginApi(data) {
 
 
 /**
- * Returns a new refresh and a new access token.
- *
- * Authentication:
- *     Required
- * 
- * @param {RefreshTokenRequest} data
- * 
- * @returns {Promise<ApiResponse & { data: AuthenticationData }>}
+ * Exchange a valid refresh token for a new access token.
+ * @param {RefreshTokenParams} params
+ * @returns {Promise<ApiResponse<RefreshTokenData>>}
  */
 async function refreshTokenApi(data) {
 
@@ -113,14 +95,9 @@ async function refreshTokenApi(data) {
 
 
 /**
- * Logs out a FixIt360 user account.
- *
- * Authentication:
- *     Required
- * 
- * @param {LogoutRequest} data
- *  
- * @returns {Promise<ApiResponse>}
+ * Invalidate the current session's tokens.
+ * @param {LogoutParams} params
+ * @returns {Promise<ApiResponse<null>>}
  */
 async function logoutApi(data) {
 
@@ -136,14 +113,9 @@ async function logoutApi(data) {
 
 
 /**
- * Verifies a FixIt360 user email.
- *
- * Authentication:
- *     Required
- * 
- * @param {VerifyEmailRequest} data
- *  
- * @returns {Promise<ApiResponse>}
+ * Verify a user's email address using the OTP sent by register/resendEmailOTP.
+ * @param {VerifyEmailParams} params
+ * @returns {Promise<ApiResponse<null>>}
  */
 async function verifyEmailApi(data) {
 
@@ -159,14 +131,9 @@ async function verifyEmailApi(data) {
 
 
 /**
- * Resends a FixIt360 user email verification OTP.
- *
- * Authentication:
- *     Required
- * 
- * @param {ResendEmailOTPRequest} data
- *  
- * @returns {Promise<ApiResponse>}
+ * Resend the email verification OTP to the authenticated (unverified) user.
+ * @param {ResendEmailOTPParams} params
+ * @returns {Promise<ApiResponse<null>>}
  */
 async function resendEmailOTPApi(data) {
 

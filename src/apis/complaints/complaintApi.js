@@ -10,16 +10,17 @@
 
 
 /**
- * @import {ApiResponse} from "../../types/typedefs.js"
- * @import {
- *      ListComplaintsRequest,
- *      GetComplaintRequest,
- *      CreateComplaintRequest,
- *      UpdateComplaintRequest,
- *      DeleteComplaintRequest,
- *      ListMineRequest,
- *      ListByUserRequest
- * } from "../../types/typedefs.js"
+ * @typedef {import('../../typedefs/common.js').ApiResponse} ApiResponse
+ * @typedef {import('../../typedefs/common.js').PaginatedResult} PaginatedResult
+ * @typedef {import('../../typedefs/common.js').OnUploadProgress} OnUploadProgress
+ * @typedef {import('../../typedefs/complaints/complaint.js').ComplaintDetail} ComplaintDetail
+ * @typedef {import('../../typedefs/complaints/complaint.js').ComplaintSummary} ComplaintSummary
+ * @typedef {import('../../typedefs/complaints/complaint.js').CreateComplaintParams} CreateComplaintParams
+ * @typedef {import('../../typedefs/complaints/complaint.js').GetComplaintParams} GetComplaintParams
+ * @typedef {import('../../typedefs/complaints/complaint.js').UpdateComplaintParams} UpdateComplaintParams
+ * @typedef {import('../../typedefs/complaints/complaint.js').DeleteComplaintParams} DeleteComplaintParams
+ * @typedef {import('../../typedefs/complaints/complaint.js').ListComplaintsByUserParams} ListComplaintsByUserParams
+ * @typedef {import('../../typedefs/complaints/complaint.js').ListMyComplaintsParams} ListMyComplaintsParams
  */
 
 
@@ -35,14 +36,8 @@ import complaintBuilders from "../../builders/complaints/complaintBuilders.js";
 
 
 /**
- * Retrieves all complaints.
- *
- * Authentication:
- *     Required
- *
- * @param {ListComplaintsRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * List all public complaints (no authentication required).
+ * @returns {Promise<ApiResponse<PaginatedResult<ComplaintSummary>>>}
  */
 async function listComplaintsApi(data) {
 
@@ -54,14 +49,9 @@ async function listComplaintsApi(data) {
 
 
 /**
- * Retrieves complaints created by the authenticated user.
- *
- * Authentication:
- *     Required
- *
- * @param {ListMineRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * List complaints filed by the authenticated user.
+ * @param {ListMyComplaintsParams} params
+ * @returns {Promise<ApiResponse<PaginatedResult<ComplaintSummary>>>}
  */
 async function listMineApi(data) {
 
@@ -76,14 +66,9 @@ async function listMineApi(data) {
 
 
 /**
- * Retrieves complaints created by a specific user.
- *
- * Authentication:
- *     Required
- *
- * @param {ListByUserRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * List complaints filed by a specific user.
+ * @param {ListComplaintsByUserParams} params
+ * @returns {Promise<ApiResponse<PaginatedResult<ComplaintSummary>>>}
  */
 async function listByUserApi(data) {
 
@@ -104,16 +89,10 @@ async function listByUserApi(data) {
 }
 
 
-
 /**
- * Retrieves a complaint.
- *
- * Authentication:
- *     Required
- *
- * @param {GetComplaintRequest} data
- *
- * @returns {Promise<ApiResponse & { data: ComplaintData }>}
+ * Retrieve a single complaint by ID.
+ * @param {GetComplaintParams} params
+ * @returns {Promise<ApiResponse<ComplaintDetail|null>>}
  */
 async function getComplaintApi(data) {
 
@@ -134,12 +113,9 @@ async function getComplaintApi(data) {
 
 
 /**
- * Creates a complaint. Photos are uploaded and included atomically
- * in the same create request (backend requires >=1 photo at creation).
- *
- * @param {CreateComplaintRequest} data
- * 
- * @returns {Promise<ApiResponse & { data: ComplaintData }>}
+ * Create a new complaint with attached photos.
+ * @param {CreateComplaintParams} params
+ * @returns {Promise<ApiResponse<ComplaintDetail>>}
  */
 async function createComplaintApi(data) {
 
@@ -169,12 +145,9 @@ async function createComplaintApi(data) {
 
 
 /**
- * Updates a complaint. Supports keeping, adding, replacing, and
- * (implicitly, via omission) deleting photos in one atomic request.
- *
- * @param {UpdateComplaintRequest} data
- * 
- * @returns {Promise<ApiResponse & { data: ComplaintData }>}
+ * Update a complaint's fields and/or its set of photos (add, replace, keep).
+ * @param {UpdateComplaintParams} params
+ * @returns {Promise<ApiResponse<ComplaintDetail>>}
  */
 async function updateComplaintApi(data) {
 
@@ -284,14 +257,9 @@ async function updateComplaintApi(data) {
 
 
 /**
- * Deletes a complaint.
- *
- * Authentication:
- *     Required
- *
- * @param {DeleteComplaintRequest} data
- *
- * @returns {Promise<ApiResponse>}
+ * Delete a complaint.
+ * @param {DeleteComplaintParams} params
+ * @returns {Promise<ApiResponse<null>>}
  */
 async function deleteComplaintApi(data) {
 
