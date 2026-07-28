@@ -41,7 +41,7 @@ export interface ReplaceComplaintImageData {
     new_image_url: string;
 }
 
-declare const ComplaintImagesApi: {
+export interface ComplaintImagesApi {
     /**
      * Add one or more photos to an existing complaint. Fails if the complaint's
      * 5-photo limit would be exceeded.
@@ -55,6 +55,8 @@ declare const ComplaintImagesApi: {
 
     /** Replace an existing complaint photo in place with a new file. */
     replace(params: ReplaceComplaintImageParams): Promise<ApiResponse<ReplaceComplaintImageData>>;
-};
+}
+
+declare const ComplaintImagesApi: ComplaintImagesApi;
 
 export default ComplaintImagesApi;

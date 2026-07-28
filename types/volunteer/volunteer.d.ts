@@ -65,7 +65,7 @@ export interface RequestReactivationParams {
     reason?: string;
 }
 
-declare const VolunteerApi: {
+export interface VolunteerApi {
     /** Submit a volunteer application for the authenticated user. */
     apply(params: VolunteerApplyParams): Promise<ApiResponse<null> | ApiResponse<ValidationErrors>>;
 
@@ -94,6 +94,8 @@ declare const VolunteerApi: {
      * Subject to review and (for admin-deactivated accounts) a cooldown period.
      */
     requestReactivation(params: RequestReactivationParams): Promise<ApiResponse<null>>;
-};
+}
+
+declare const VolunteerApi: VolunteerApi;
 
 export default VolunteerApi;

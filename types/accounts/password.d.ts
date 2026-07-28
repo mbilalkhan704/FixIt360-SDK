@@ -49,7 +49,7 @@ export interface ResetPasswordFieldErrors {
     confirm_new_password?: string[];
 }
 
-declare const PasswordApi: {
+export interface PasswordApi {
     /** Change the authenticated user's password. */
     changePassword(params: ChangePasswordParams): Promise<ApiResponse<ChangePasswordData>>;
 
@@ -71,6 +71,8 @@ declare const PasswordApi: {
     resetPassword(
         params: ResetPasswordParams
     ): Promise<ApiResponse<null> | ApiResponse<ResetPasswordFieldErrors>>;
-};
+}
+
+declare const PasswordApi: PasswordApi;
 
 export default PasswordApi;

@@ -1,11 +1,11 @@
 import type { SDKConfig } from "./common";
-import type AuthApi from "./accounts/auth";
-import type PasswordApi from "./accounts/password";
-import type ProfileApi from "./accounts/profile";
-import type ComplaintApi from "./complaints/complaint";
-import type ComplaintImagesApi from "./complaints/complaintImages";
-import type VolunteerApi from "./volunteer/volunteer";
-import type AdminVolunteerApi from "./admin/volunteer";
+import type { AuthApi } from "./accounts/auth";
+import type { PasswordApi } from "./accounts/password";
+import type { ProfileApi } from "./accounts/profile";
+import type { ComplaintApi } from "./complaints/complaint";
+import type { ComplaintImagesApi } from "./complaints/complaintImages";
+import type { VolunteerApi } from "./volunteer/volunteer";
+import type { AdminVolunteerApi } from "./admin/volunteer";
 
 /** Shape of `sdk.accounts`, per `src/apis/accounts/index.js`. */
 interface AccountsApi {

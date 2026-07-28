@@ -105,7 +105,7 @@ export interface ListMyComplaintsParams {
     access_token: string;
 }
 
-declare const ComplaintApi: {
+export interface ComplaintApi {
     /** Create a new complaint with attached photos. */
     create(params: CreateComplaintParams): Promise<ApiResponse<ComplaintDetail>>;
 
@@ -130,6 +130,8 @@ declare const ComplaintApi: {
     listMine(
         params: ListMyComplaintsParams
     ): Promise<ApiResponse<PaginatedResult<ComplaintSummary>>>;
-};
+}
+
+declare const ComplaintApi: ComplaintApi;
 
 export default ComplaintApi;

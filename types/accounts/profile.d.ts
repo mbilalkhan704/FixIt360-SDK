@@ -30,7 +30,7 @@ export interface UpdateProfileParams {
     profile_picture?: Blob;
 }
 
-declare const ProfileApi: {
+export interface ProfileApi {
     /** Retrieve the authenticated user's profile. */
     getProfile(params: GetProfileParams): Promise<ApiResponse<UserProfile>>;
 
@@ -39,6 +39,8 @@ declare const ProfileApi: {
      * Only the fields provided are changed.
      */
     updateProfile(params: UpdateProfileParams): Promise<ApiResponse<UserProfile>>;
-};
+}
+
+declare const ProfileApi: ProfileApi;
 
 export default ProfileApi;

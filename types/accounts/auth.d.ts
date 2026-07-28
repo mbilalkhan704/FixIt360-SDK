@@ -64,7 +64,7 @@ export interface VerifyEmailParams {
     otp: string;
 }
 
-declare const AuthApi: {
+export interface AuthApi {
     /** Authenticate a user with email and password. */
     login(params: LoginParams): Promise<ApiResponse<LoginData>>;
 
@@ -82,6 +82,8 @@ declare const AuthApi: {
 
     /** Verify a user's email address using the OTP sent by register/resendEmailOTP. */
     verifyEmail(params: VerifyEmailParams): Promise<ApiResponse<null>>;
-};
+}
+
+declare const AuthApi: AuthApi;
 
 export default AuthApi;

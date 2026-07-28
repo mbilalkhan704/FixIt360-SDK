@@ -129,7 +129,7 @@ export interface ReviewVolunteerReactivationRequestParams {
     review_reason?: string;
 }
 
-declare const AdminVolunteerApi: {
+export interface AdminVolunteerApi {
     /** List volunteer applications, optionally filtered by status. */
     listVolunteerApplications(
         params: ListVolunteerApplicationsParams
@@ -168,6 +168,8 @@ declare const AdminVolunteerApi: {
     reviewVolunteerReactivationRequest(
         params: ReviewVolunteerReactivationRequestParams
     ): Promise<ApiResponse<null>>;
-};
+}
+
+declare const AdminVolunteerApi: AdminVolunteerApi;
 
 export default AdminVolunteerApi;
